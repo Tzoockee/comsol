@@ -25,6 +25,7 @@ class MainFrame(wx.Frame):
 		topSizer.Add(wx.StaticLine(self.panel), 0, wx.ALL|wx.EXPAND, 5)
 		topSizer.Add(newUser, 0, wx.ALL|wx.EXPAND, 5)
 		topSizer.Add(changePass, 0, wx.ALL|wx.EXPAND, 5)
+		topSizer.Add(wx.StaticLine(self.panel), 0, wx.ALL|wx.EXPAND, 5)
 
 		self.panel.SetSizer(topSizer)
 		topSizer.Fit(self)
