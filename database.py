@@ -37,3 +37,17 @@ def FillUserList(userlist):
         conn.close()
     except pyodbc.Error, err:
         wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
+
+def FillDocTypeList(docTypeList):
+    try:
+        conn = pyodbc.connect(connString, autocommit=True)
+        curs = conn.cursor()
+        curs.execute('SELECT doctype, description FROM DocType')
+        index = 0
+        for row in curs:
+            docTypeList.InsertStringItem(index, str(row.doctype))
+            docTypeList.SetStringItem(index, 1, str(row.description))
+            index = index + 1
+        conn.close()
+    except pyodbc.Error, err:
+        wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
