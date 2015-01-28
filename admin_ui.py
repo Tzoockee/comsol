@@ -50,16 +50,7 @@ class UsersTab(wx.Panel):
         
     def RefreshUserList(self):
         self._userList.DeleteAllItems()
-        conn = pyodbc.connect(database.connString, autocommit=True)
-        curs = conn.cursor()
-        curs.execute('SELECT username, firstname, lastname FROM USERS')
-        index = 0
-        for row in curs:
-            self._userList.InsertStringItem(index, str(row.username))
-            self._userList.SetStringItem(index, 1, str(row.firstname))
-            self._userList.SetStringItem(index, 2, str(row.lastname))
-            index = index + 1
-        conn.close()
+        database.FillUserList(self._userList)
         
 class Tabs(wx.Notebook):
     def __init__(self, parent):

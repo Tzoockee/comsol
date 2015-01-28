@@ -22,3 +22,18 @@ def DeleteUser(username):
         conn.close()
     except pyodbc.Error, err:
         wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
+
+def FillUserList(userlist):
+    try:
+        conn = pyodbc.connect(connString, autocommit=True)
+        curs = conn.cursor()
+        curs.execute('SELECT username, firstname, lastname FROM USERS')
+        index = 0
+        for row in curs:
+            userlist.InsertStringItem(index, str(row.username))
+            userlist.SetStringItem(index, 1, str(row.firstname))
+            userlist.SetStringItem(index, 2, str(row.lastname))
+            index = index + 1
+        conn.close()
+    except pyodbc.Error, err:
+        wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
