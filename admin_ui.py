@@ -6,7 +6,7 @@ class UsersTab(wx.Panel):
 		wx.Panel.__init__(self, parent)
 		
 		#users list control
-		self._userList = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
+		self._userList = wx.ListCtrl(self, -1, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
 		self._userList.InsertColumn(1, 'Utilizator')
 		self._userList.InsertColumn(2, 'Nume')
 		self._userList.InsertColumn(3, 'Prenume')
