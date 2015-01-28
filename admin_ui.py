@@ -38,6 +38,8 @@ class UsersTab(wx.Panel):
 		ret = newUserDlg.ShowModal()		
 		if ret == wx.ID_OK:
 			print newUserDlg.GetName()
+			#TODO: Create the user
+			self.RefreshUserList()
 		else:
 			print 'CANCEL'
 		newUserDlg.Destroy()
@@ -73,6 +75,6 @@ class MainFrame(wx.Frame):
 		self.Layout()
 		
 app = wx.App()
-frame = MainFrame(None, -1, 'Test UI')
+frame = MainFrame(None, -1, 'Admin')
 frame.Show()
 app.MainLoop()
