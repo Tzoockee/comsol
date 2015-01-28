@@ -1,6 +1,7 @@
 import wx 
 import newUser
 import pyodbc
+import database
 
 class UsersTab(wx.Panel):
     def __init__(self, parent):
@@ -38,11 +39,7 @@ class UsersTab(wx.Panel):
         newUserDlg = newUser.NewUser(None, -1, 'Utilizator nou')
         ret = newUserDlg.ShowModal()        
         if ret == wx.ID_OK:
-            self._userList.DeleteAllItems()
-            conn = pyodbc.connect('DRIVER={SQL Server};SERVER=LAPTOP\SQLSERVEREXPRESS;DATABASE=NumereDB;UID=sa;PWD=alibaba', autocommit=True)
-            curs = conn.cursor()
-            curs.execute('INSERT INTO USERS(username, firstname, lastname, password) VALUES(?, ?, ?, ?)', newUserDlg.GetUserName(), newUserDlg.GetFirstName(), newUserDlg.GetLastName(), newUserDlg.GetUserName())
-            conn.close()
+            database.AddNewUser(newUserDlg.GetUserName(), newUserDlg.GetFirstName(), newUserDlg.GetLastName())
             self.RefreshUserList()
         newUserDlg.Destroy()
         
@@ -51,7 +48,7 @@ class UsersTab(wx.Panel):
         
     def RefreshUserList(self):
         self._userList.DeleteAllItems()
-        conn = pyodbc.connect('DRIVER={SQL Server};SERVER=LAPTOP\SQLSERVEREXPRESS;DATABASE=NumereDB;UID=sa;PWD=alibaba', autocommit=True)
+        conn = pyodbc.connect(database.connString, autocommit=True)
         curs = conn.cursor()
         curs.execute('SELECT username, firstname, lastname FROM USERS')
         index = 0
