@@ -9,3 +9,9 @@ def AddNewUser(username, firstname, lastname):
     curs = conn.cursor()
     curs.execute('INSERT INTO USERS(username, firstname, lastname, password) VALUES(?, ?, ?, ?)', username, firstname, lastname, username)
     conn.close()
+
+def DeleteUser(username):
+    conn = pyodbc.connect(connString, autocommit=True)
+    curs = conn.cursor()
+    curs.execute('DELETE FROM USERS WHERE username = ''?''', username)
+    conn.close()

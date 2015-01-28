@@ -44,7 +44,9 @@ class UsersTab(wx.Panel):
         newUserDlg.Destroy()
         
     def OnDeleteUser(self, event):
-        index = 0
+        index = self._userList.GetFirstSelected()
+        database.DeleteUser(self._userList.GetItem(index, 0).GetText())
+        self.RefreshUserList()
         
     def RefreshUserList(self):
         self._userList.DeleteAllItems()
