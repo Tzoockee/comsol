@@ -2,6 +2,7 @@ import wx
 
 import login
 import changePass
+import client_cfg
 
 from datetime import datetime
 import time
@@ -10,7 +11,7 @@ import shutil
 import sys
 
 username = ''
-docRepositoryPath = 'C:\\Temp\\'
+
 
 class RegisterTab(wx.Panel):
     def __init__(self, parent):
@@ -125,7 +126,7 @@ class RegisterTab(wx.Panel):
         fileNameWithExt = os.path.basename(selectedFile)
         fileName, fileExtension = os.path.splitext(fileNameWithExt)
         newFileName = username + '_' + selectedYear + '_' + selectedMonth + '_' + selectedDay + '_' + str(time.time()).replace('.', '_') + fileExtension
-        destFile = os.path.join(os.path.sep, docRepositoryPath, newFileName)
+        destFile = os.path.join(os.path.sep, client_cfg.docRepositoryPath, newFileName)
         print 'Destination File: 						' + destFile
         try:
             shutil.copy2(self._path.GetValue(), destFile)
