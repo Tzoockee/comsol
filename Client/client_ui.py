@@ -1,9 +1,13 @@
 import wx
+
 import login
+import changePass
+
 from datetime import datetime
 import time
 import os
 import shutil
+import sys
 
 username = ''
 docRepositoryPath = 'C:\\Temp\\'
@@ -127,7 +131,35 @@ class RegisterTab(wx.Panel):
             shutil.copy2(self._path.GetValue(), destFile)
         except (IOError, os.error) as why:
             wx.MessageBox(str(why), 'Error', wx.OK | wx.ICON_ERROR)
+
+class OthersTab(wx.Panel):
+    def __init__(self, parent):
+        wx.Panel.__init__(self, parent)
+
+        changePwdBtn = wx.Button(self, wx.ID_ANY, 'Schimbare Parola')
 		
+        topSizer        = wx.BoxSizer(wx.VERTICAL)
+        sizerBtn        = wx.BoxSizer(wx.HORIZONTAL)			
+		
+        sizerBtn.Add(changePwdBtn, 0, wx.ALL, 5)
+
+        topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
+        topSizer.Add(sizerBtn, 0, wx.ALL|wx.EXPAND, 5)
+ 
+        self.SetSizer(topSizer)
+        topSizer.Fit(self)
+
+        #events
+        self.Bind(wx.EVT_BUTTON, self.OnChangePassword, changePwdBtn)
+	   
+    def OnChangePassword(self, event):
+        changePwdDlg = changePass.ChangePass(None, -1, 'Schimbare Parola')
+        ret = changePwdDlg.ShowModal()        
+        if ret == wx.ID_OK:
+            print changePwdDlg.GetOldPassword()
+            print changePwdDlg.GetNewPassword()
+        changePwdDlg.Destroy()
+	  
 class Tabs(wx.Notebook):
     def __init__(self, parent):
         wx.Notebook.__init__(self, parent, id=wx.ID_ANY, style=wx.BK_DEFAULT)
@@ -135,7 +167,7 @@ class Tabs(wx.Notebook):
         registerTab = RegisterTab(self)
         self.AddPage(registerTab, "Inregistrare")
         
-        othersTab = wx.Panel(self)
+        othersTab = OthersTab(self)
         self.AddPage(othersTab, "Altele")
         
 class MainFrame(wx.Frame):
