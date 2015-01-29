@@ -3,7 +3,8 @@ __author__ = 'Costin'
 import pyodbc
 import wx
 
-connString = 'DRIVER={SQL Server};SERVER=LAPTOP\SQLSERVEREXPRESS;DATABASE=NumereDB;UID=sa;PWD=alibaba'
+#connString = 'DRIVER={SQL Server};SERVER=LAPTOP\SQLSERVEREXPRESS;DATABASE=NumereDB;UID=sa;PWD=alibaba'
+connString = 'DSN=NumereDB;Trusted_Connection=yes'
 
 def AddNewUser(username, firstname, lastname):
     try:
@@ -18,7 +19,7 @@ def AddNewDocType(docType, description):
     try:
         conn = pyodbc.connect(connString, autocommit=True)
         curs = conn.cursor()
-        curs.execute('INSERT INTO DocTypes(docType, description) VALUES(?, ?)', docType, description)
+        curs.execute('INSERT INTO DocType(docType, description) VALUES(?, ?)', docType, description)
         conn.close()
     except pyodbc.Error, err:
         wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
