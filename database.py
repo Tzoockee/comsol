@@ -13,12 +13,30 @@ def AddNewUser(username, firstname, lastname):
         conn.close()
     except pyodbc.Error, err:
         wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
+		
+def AddNewDocType(docType, description):
+    try:
+        conn = pyodbc.connect(connString, autocommit=True)
+        curs = conn.cursor()
+        curs.execute('INSERT INTO DocTypes(docType, description) VALUES(?, ?)', docType, description)
+        conn.close()
+    except pyodbc.Error, err:
+        wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
 
 def DeleteUser(username):
     try:
         conn = pyodbc.connect(connString, autocommit=True)
         curs = conn.cursor()
         curs.execute('DELETE FROM USERS WHERE username = ''?''', username)
+        conn.close()
+    except pyodbc.Error, err:
+        wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
+		
+def DeleteDocType(docType):
+    try:
+        conn = pyodbc.connect(connString, autocommit=True)
+        curs = conn.cursor()
+        curs.execute('DELETE FROM DocTypes WHERE docType = ''?''', docType)
         conn.close()
     except pyodbc.Error, err:
         wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)

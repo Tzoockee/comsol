@@ -1,5 +1,6 @@
 import wx 
 import newUser
+import newDocType
 import pyodbc
 import database
 
@@ -45,8 +46,9 @@ class UsersTab(wx.Panel):
         
     def OnDeleteUser(self, event):
         index = self._userList.GetFirstSelected()
-        database.DeleteUser(self._userList.GetItem(index, 0).GetText())
-        self.RefreshUserList()
+        if index != -1 :
+            database.DeleteUser(self._userList.GetItem(index, 0).GetText())
+            self.RefreshUserList()
         
     def RefreshUserList(self):
         self._userList.DeleteAllItems()
@@ -77,8 +79,8 @@ class DocTypeTab(wx.Panel):
         topSizer.Fit(self)
 
         #events
-        #self.Bind(wx.EVT_BUTTON, self.OnNewUser, newBtn)
-        #self.Bind(wx.EVT_BUTTON, self.OnDeleteUser, deleteBtn)
+        self.Bind(wx.EVT_BUTTON, self.OnNewDocType, newBtn)
+        self.Bind(wx.EVT_BUTTON, self.OnDeleteDocType, deleteBtn)
 
         #initialize
         self.RefreshDocTypeList()
@@ -87,6 +89,20 @@ class DocTypeTab(wx.Panel):
         self._docTypeList.DeleteAllItems()
         database.FillDocTypeList(self._docTypeList)
 
+    def OnNewDocType(self, event):
+        newDocTypeDlg = newDocType.NewDocType(None, -1, 'Tip Document Nou')
+        ret = newDocTypeDlg.ShowModal()        
+        if ret == wx.ID_OK:
+            database.AddNewDocType(newDocTypeDlg.GetDocumentType(), newDocTypeDlg.GetDocumentDescription())
+            self.RefreshDocTypeList()
+        newDocTypeDlg.Destroy()
+
+    def OnDeleteDocType(self, event):
+        index = self._docTypeList.GetFirstSelected()
+        if index != -1 :
+		    database.DeleteDocType(self._docTypeList.GetItem(index, 0).GetText())
+		    self.RefreshDocTypeList()
+		
 
 class Tabs(wx.Notebook):
     def __init__(self, parent):
