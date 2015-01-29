@@ -144,6 +144,8 @@ class OthersTab(wx.Panel):
         sizerBtn.Add(changePwdBtn, 0, wx.ALL, 5)
 
         topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
+        topSizer.Add(wx.StaticText(self, wx.ID_ANY, username), 0, wx.ALL|wx.EXPAND, 5)
+        topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
         topSizer.Add(sizerBtn, 0, wx.ALL|wx.EXPAND, 5)
  
         self.SetSizer(topSizer)
