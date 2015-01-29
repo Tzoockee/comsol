@@ -14,7 +14,7 @@ class Login(wx.Dialog):
 		self._password = wx.TextCtrl(self.panel, wx.ID_ANY, '', style=wx.TE_PASSWORD)
 		
 		okBtn = wx.Button(self.panel, wx.ID_OK, 'OK')		
-		cancelBtn = wx.Button(self.panel, wx.ID_CANCEL, 'Cancel')
+		cancelBtn = wx.Button(self.panel, wx.ID_CANCEL, 'Cancel')		
 		
 		topSizer		= wx.BoxSizer(wx.VERTICAL)
 		inputOneSizer   = wx.BoxSizer(wx.HORIZONTAL)
@@ -37,7 +37,9 @@ class Login(wx.Dialog):
 		topSizer.Add(btnSizer, 0, wx.ALL|wx.CENTER, 5)
 		
 		self.panel.SetSizer(topSizer)
-		topSizer.Fit(self)
+		topSizer.Fit(self)        
+		okBtn.SetDefault()
+		self._user.SetFocus()
 		
 	def GetUserName(self):
 		return self._user.GetValue()
