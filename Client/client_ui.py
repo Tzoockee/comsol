@@ -70,7 +70,7 @@ class RegisterTab(wx.Panel):
         btnSizer.Add(registerBtn, 0, wx.CENTER, 5)
  
         topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(wx.StaticText(self, wx.ID_ANY, authUser), 0, wx.ALL|wx.EXPAND, 5)
+        topSizer.Add(wx.StaticText(self, wx.ID_ANY, database.GetUserFullName(authUser)), 0, wx.ALL|wx.EXPAND, 5)
         topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
         topSizer.Add(sizerDocType, 0, wx.ALL|wx.EXPAND, 5)
         topSizer.Add(sizerDate, 0, wx.ALL|wx.EXPAND, 5)
@@ -93,8 +93,9 @@ class RegisterTab(wx.Panel):
         self.FillDocTypes()
     
     def FillDocTypes(self):
-        self._docType.Append('Tip 1')
-        self._docType.Append('Tip 2')
+        docTypes = database.GetDocumentTypes()
+        for docType in docTypes:
+            self._docType.Append(docType[0])
         self._docType.SetSelection(0)
 		
     def OnFileBrowse(self, event):
@@ -146,7 +147,7 @@ class OthersTab(wx.Panel):
         sizerBtn.Add(changePwdBtn, 0, wx.ALL, 5)
 
         topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(wx.StaticText(self, wx.ID_ANY, authUser), 0, wx.ALL|wx.EXPAND, 5)
+        topSizer.Add(wx.StaticText(self, wx.ID_ANY, database.GetUserFullName(authUser)), 0, wx.ALL|wx.EXPAND, 5)
         topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
         topSizer.Add(sizerBtn, 0, wx.ALL|wx.EXPAND, 5)
  

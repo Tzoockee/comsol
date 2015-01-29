@@ -17,3 +17,25 @@ def TestLogin(username, password):
     except pyodbc.Error, err:
         wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
     return status
+
+def GetUserFullName(username):
+    try:
+        conn = pyodbc.connect(connString, autocommit=True)
+        curs = conn.cursor()
+        curs.execute('SELECT firstname, lastname FROM USERS WHERE username = ?', username)
+        row = curs.fetchone()
+        conn.close()
+    except pyodbc.Error, err:
+        wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
+    return row.firstname + ' ' + row.lastname
+
+def GetDocumentTypes():
+    try:
+        conn = pyodbc.connect(connString, autocommit=True)
+        curs = conn.cursor()
+        curs.execute('SELECT docType FROM DocType')
+        rows = curs.fetchall()
+        conn.close()
+    except pyodbc.Error, err:
+        wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
+    return rows
