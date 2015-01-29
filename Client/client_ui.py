@@ -1,8 +1,12 @@
 import wx
 import login
 from datetime import datetime
+import time
+import os
+import shutil
 
 username = ''
+docRepositoryPath = 'C:\\Temp\\'
 
 class RegisterTab(wx.Panel):
     def __init__(self, parent):
@@ -69,10 +73,29 @@ class RegisterTab(wx.Panel):
         dialog.Destroy()
 
     def OnRegister(self, event):
-        print self._docType.GetString(self._docType.GetCurrentSelection())
-        d = self._date.GetValue()		
-        print str(d.Day) + '/' + str(d.Month + 1) + '/' + str(d.Year)
-        print self._path.GetValue()
+        #First copy the file and get the new name and path
+        #https://msdn.microsoft.com/en-us/library/aa259188(SQL.80).aspx
+        selectedDocType = self._docType.GetString(self._docType.GetCurrentSelection())
+        selectedYear = str(self._date.GetValue().Year)
+        selectedMonth = str(self._date.GetValue().Month+1)
+        selectedDay = str(self._date.GetValue().Day)
+        selectedFile = str(self._path.GetValue())
+
+        print 'Selected User: 							' + username
+        print 'Selected Document type: 					' + selectedDocType
+        print 'Selected Date: 							' + selectedDay + '/' + selectedMonth + '/' + selectedYear
+        print 'Selected File: 							' + selectedFile
+
+        dirName = os.path.dirname(selectedFile)
+        fileNameWithExt = os.path.basename(selectedFile)
+        fileName, fileExtension = os.path.splitext(fileNameWithExt)
+        newFileName = username + '_' + selectedYear + '_' + selectedMonth + '_' + selectedDay + '_' + str(time.time()).replace('.', '_') + fileExtension
+        destFile = os.path.join(os.path.sep, docRepositoryPath, newFileName)
+        print 'Destination File: 						' + destFile
+        try:
+            shutil.copy2(self._path.GetValue(), destFile)
+        except (IOError, os.error) as why:
+            wx.MessageBox(str(why), 'Error', wx.OK | wx.ICON_ERROR)
 		
 class Tabs(wx.Notebook):
     def __init__(self, parent):
@@ -101,7 +124,6 @@ app = wx.App()
 loginDlg = login.Login(None, -1, 'Autentificare')
 ret = loginDlg.ShowModal()
 if ret == wx.ID_OK:
-    print loginDlg.GetUserName() + ' ' + loginDlg.GetPassword()
     username = loginDlg.GetUserName()
 else:
     loginDlg.Destroy()
