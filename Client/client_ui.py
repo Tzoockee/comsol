@@ -138,6 +138,11 @@ class RegisterTab(wx.Panel):
         newNumber = database.AddDocument(authUser, selectedDocType, selectedDay + '/' + selectedMonth + '/' + selectedYear, selectedLastName, selectedFirstName, destFile, selectedDescription)
         wx.MessageBox(str(newNumber), 'Error', wx.OK | wx.ICON_INFORMATION)
 
+        self._lastName.SetValue('')
+        self._firstName.SetValue('')
+        self._path.SetValue('')
+        self._description.SetValue('')
+
 class OthersTab(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
