@@ -99,7 +99,7 @@ class RegisterTab(wx.Panel):
         self._docType.SetSelection(0)
 		
     def OnFileBrowse(self, event):
-        dialog = wx.FileDialog(self, "Selectati fisierul...", "", "", "Word files (*.doc)|*.doc|PDF files (*.pdf)|*.pdf", wx.FD_OPEN | wx.FD_CHANGE_DIR)
+        dialog = wx.FileDialog(self, "Selectati fisierul...", "", "", "Word files (*.doc)|*.doc|PDF files (*.pdf)|*.pdf|All files (*.*)|*.*", wx.FD_OPEN | wx.FD_CHANGE_DIR)
         if dialog.ShowModal() == wx.ID_OK:
             self._path.SetValue(str(dialog.GetPath()))
         dialog.Destroy()
@@ -115,6 +115,10 @@ class RegisterTab(wx.Panel):
         selectedDescription = self._description.GetValue()
         selectedLastName = self._lastName.GetValue()
         selectedFirstName = self._firstName.GetValue()
+
+        if selectedFile == '' or selectedDescription == '' or selectedLastName == '' or selectedFirstName == '':
+            wx.MessageBox('Nu toate campurile sunt completate', 'Error', wx.OK | wx.ICON_ERROR)
+            return
 
         print 'Selected User: 							' + authUser
         print 'Selected Document type: 					' + selectedDocType
