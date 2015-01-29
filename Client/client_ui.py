@@ -77,6 +77,7 @@ class RegisterTab(wx.Panel):
  
         self.SetSizer(topSizer)
         topSizer.Fit(self)
+        registerBtn.SetDefault()
 
         #events
         self.Bind(wx.EVT_BUTTON, self.OnFileBrowse, browseBtn)
