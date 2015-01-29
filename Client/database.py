@@ -39,3 +39,39 @@ def GetDocumentTypes():
     except pyodbc.Error, err:
         wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
     return rows
+
+def GetUserId(username):
+    try:
+        conn = pyodbc.connect(connString, autocommit=True)
+        curs = conn.cursor()
+        curs.execute('SELECT id FROM Users WHERE username = ?', username)
+        row = curs.fetchone()
+        conn.close()
+    except pyodbc.Error, err:
+        wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
+    return row.id
+
+def GetDocTypeId(docType):
+    try:
+        conn = pyodbc.connect(connString, autocommit=True)
+        curs = conn.cursor()
+        curs.execute('SELECT id FROM DocType WHERE docType = ?', docType)
+        row = curs.fetchone()
+        conn.close()
+    except pyodbc.Error, err:
+        wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
+    return row.id
+
+def AddDocument(authUser, docType, userDate, lastName, firstName, filePath, description):
+    userId = GetUserId(authUser)
+    docTypeId = GetDocTypeId(docType)
+    try:
+        conn = pyodbc.connect(connString, autocommit=True)
+        curs = conn.cursor()
+        curs.execute('INSERT INTO Documents(user_id, doctype_id, user_date, file_path, first_name, last_name, description) VALUES (?, ?, ?, ?, ?, ?, ?)', userId, docTypeId, userDate, filePath, firstName, lastName, description)
+        curs.execute('SELECT @@IDENTITY As newNumber')
+        row = curs.fetchone()
+        conn.close()
+    except pyodbc.Error, err:
+        wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
+    return str(row.newNumber) + ' - ' + userDate

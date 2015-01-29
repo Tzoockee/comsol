@@ -135,6 +135,9 @@ class RegisterTab(wx.Panel):
         except (IOError, os.error) as why:
             wx.MessageBox(str(why), 'Error', wx.OK | wx.ICON_ERROR)
 
+        newNumber = database.AddDocument(authUser, selectedDocType, selectedDay + '/' + selectedMonth + '/' + selectedYear, selectedLastName, selectedFirstName, destFile, selectedDescription)
+        wx.MessageBox(str(newNumber), 'Error', wx.OK | wx.ICON_INFORMATION)
+
 class OthersTab(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
