@@ -3,6 +3,7 @@ import wx
 import login
 import changePass
 import client_cfg
+import database
 
 from datetime import datetime
 import time
@@ -10,7 +11,7 @@ import os
 import shutil
 import sys
 
-username = ''
+authUser = ''
 
 
 class RegisterTab(wx.Panel):
@@ -69,7 +70,7 @@ class RegisterTab(wx.Panel):
         btnSizer.Add(registerBtn, 0, wx.CENTER, 5)
  
         topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(wx.StaticText(self, wx.ID_ANY, username), 0, wx.ALL|wx.EXPAND, 5)
+        topSizer.Add(wx.StaticText(self, wx.ID_ANY, authUser), 0, wx.ALL|wx.EXPAND, 5)
         topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
         topSizer.Add(sizerDocType, 0, wx.ALL|wx.EXPAND, 5)
         topSizer.Add(sizerDate, 0, wx.ALL|wx.EXPAND, 5)
@@ -114,7 +115,7 @@ class RegisterTab(wx.Panel):
         selectedLastName = self._lastName.GetValue()
         selectedFirstName = self._firstName.GetValue()
 
-        print 'Selected User: 							' + username
+        print 'Selected User: 							' + authUser
         print 'Selected Document type: 					' + selectedDocType
         print 'Selected Date: 							' + selectedDay + '/' + selectedMonth + '/' + selectedYear
         print 'Selected Last Name: 						' + selectedLastName
@@ -125,7 +126,7 @@ class RegisterTab(wx.Panel):
         dirName = os.path.dirname(selectedFile)
         fileNameWithExt = os.path.basename(selectedFile)
         fileName, fileExtension = os.path.splitext(fileNameWithExt)
-        newFileName = username + '_' + selectedYear + '_' + selectedMonth + '_' + selectedDay + '_' + str(time.time()).replace('.', '_') + fileExtension
+        newFileName = authUser + '_' + selectedYear + '_' + selectedMonth + '_' + selectedDay + '_' + str(time.time()).replace('.', '_') + fileExtension
         destFile = os.path.join(os.path.sep, client_cfg.docRepositoryPath, newFileName)
         print 'Destination File: 						' + destFile
         try:
@@ -145,7 +146,7 @@ class OthersTab(wx.Panel):
         sizerBtn.Add(changePwdBtn, 0, wx.ALL, 5)
 
         topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(wx.StaticText(self, wx.ID_ANY, username), 0, wx.ALL|wx.EXPAND, 5)
+        topSizer.Add(wx.StaticText(self, wx.ID_ANY, authUser), 0, wx.ALL|wx.EXPAND, 5)
         topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
         topSizer.Add(sizerBtn, 0, wx.ALL|wx.EXPAND, 5)
  
@@ -154,7 +155,7 @@ class OthersTab(wx.Panel):
 
         #events
         self.Bind(wx.EVT_BUTTON, self.OnChangePassword, changePwdBtn)
-	   
+
     def OnChangePassword(self, event):
         changePwdDlg = changePass.ChangePass(None, -1, 'Schimbare Parola')
         ret = changePwdDlg.ShowModal()        
@@ -162,7 +163,7 @@ class OthersTab(wx.Panel):
             print changePwdDlg.GetOldPassword()
             print changePwdDlg.GetNewPassword()
         changePwdDlg.Destroy()
-	  
+
 class Tabs(wx.Notebook):
     def __init__(self, parent):
         wx.Notebook.__init__(self, parent, id=wx.ID_ANY, style=wx.BK_DEFAULT)
@@ -190,11 +191,16 @@ app = wx.App()
 loginDlg = login.Login(None, -1, 'Autentificare')
 ret = loginDlg.ShowModal()
 if ret == wx.ID_OK:
-    username = loginDlg.GetUserName()
+    if database.TestLogin(loginDlg.GetUserName(), loginDlg.GetPassword()):
+        authUser = loginDlg.GetUserName()
+    else:
+        wx.MessageBox('Autentificare esuata', 'Error', wx.OK | wx.ICON_ERROR)
+        loginDlg.Destroy()
+        sys.exit()
 else:
     loginDlg.Destroy()
     sys.exit()
-	
+
 loginDlg.Destroy()
 		
 #main frame
