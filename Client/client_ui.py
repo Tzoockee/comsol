@@ -20,34 +20,58 @@ class RegisterTab(wx.Panel):
 
         labelPath = wx.StaticText(self, wx.ID_ANY, 'Cale Document')
         self._path = wx.TextCtrl(self, wx.ID_ANY, '', style = wx.TE_READONLY)
-        browseBtn = wx.Button(self, wx.ID_ANY, 'Browse')  
+        browseBtn = wx.Button(self, wx.ID_ANY, '...')  
 
+        labelDesc = wx.StaticText(self, wx.ID_ANY, 'Descriere')
+        self._description = wx.TextCtrl(self, wx.ID_ANY, '', style = wx.TE_MULTILINE, size = (-1, 100))
+
+        labelLastName = wx.StaticText(self, wx.ID_ANY, 'Nume')
+        self._lastName = wx.TextCtrl(self, wx.ID_ANY, '')
+		
+        labelFirstName = wx.StaticText(self, wx.ID_ANY, 'Prenume')
+        self._firstName = wx.TextCtrl(self, wx.ID_ANY, '')
+		
         registerBtn = wx.Button(self, wx.ID_OK, 'Inregistrare')        
  
         topSizer        = wx.BoxSizer(wx.VERTICAL)
-        inputOneSizer   = wx.BoxSizer(wx.HORIZONTAL)
-        inputTwoSizer   = wx.BoxSizer(wx.HORIZONTAL)
-        inputThreeSizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizerDocType    = wx.BoxSizer(wx.HORIZONTAL)
+        sizerDate       = wx.BoxSizer(wx.HORIZONTAL)
+        sizerPath       = wx.BoxSizer(wx.HORIZONTAL)
+        sizerDesc       = wx.BoxSizer(wx.HORIZONTAL)
+        sizerLastName   = wx.BoxSizer(wx.HORIZONTAL)
+        sizerFirstName  = wx.BoxSizer(wx.HORIZONTAL)		
         btnSizer        = wx.BoxSizer(wx.HORIZONTAL)
  
-        inputOneSizer.Add(labelDocType, 0, wx.ALL, 5)
-        inputOneSizer.Add(self._docType, 1, wx.ALL|wx.EXPAND, 5)
+        sizerDocType.Add(labelDocType, 0, wx.ALL, 5)
+        sizerDocType.Add(self._docType, 1, wx.ALL|wx.EXPAND, 5)
  
-        inputTwoSizer.Add(labelDate, 0, wx.ALL, 5)
-        inputTwoSizer.Add(self._date, 1, wx.ALL|wx.EXPAND, 5)
+        sizerDate.Add(labelDate, 0, wx.ALL, 5)
+        sizerDate.Add(self._date, 1, wx.ALL|wx.EXPAND, 5)
 		
-        inputThreeSizer.Add(labelPath, 0, wx.ALL, 5)
-        inputThreeSizer.Add(self._path, 1, wx.ALL|wx.EXPAND, 5)
-        inputThreeSizer.Add(browseBtn, 1, wx.ALL|wx.EXPAND, 5)
+        sizerPath.Add(labelPath, 0, wx.ALL, 5)
+        sizerPath.Add(self._path, 1, wx.ALL|wx.EXPAND, 5)
+        sizerPath.Add(browseBtn, 1, wx.ALL, 5)
  
+        sizerDesc.Add(labelDesc, 0, wx.ALL, 5)
+        sizerDesc.Add(self._description, 1, wx.ALL|wx.EXPAND, 5)
+ 
+        sizerLastName.Add(labelLastName, 0, wx.ALL, 5)
+        sizerLastName.Add(self._lastName, 1, wx.ALL|wx.EXPAND, 5)
+
+        sizerFirstName.Add(labelFirstName, 0, wx.ALL, 5)
+        sizerFirstName.Add(self._firstName, 1, wx.ALL|wx.EXPAND, 5)
+		
         btnSizer.Add(registerBtn, 0, wx.CENTER, 5)
  
         topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
         topSizer.Add(wx.StaticText(self, wx.ID_ANY, username), 0, wx.ALL|wx.EXPAND, 5)
         topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(inputOneSizer, 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(inputTwoSizer, 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(inputThreeSizer, 0, wx.ALL|wx.EXPAND, 5)
+        topSizer.Add(sizerDocType, 0, wx.ALL|wx.EXPAND, 5)
+        topSizer.Add(sizerDate, 0, wx.ALL|wx.EXPAND, 5)
+        topSizer.Add(sizerLastName, 0, wx.ALL|wx.EXPAND, 5)
+        topSizer.Add(sizerFirstName, 0, wx.ALL|wx.EXPAND, 5)
+        topSizer.Add(sizerPath, 0, wx.ALL|wx.EXPAND, 5)
+        topSizer.Add(sizerDesc, 0, wx.ALL|wx.EXPAND, 5)
         topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
         topSizer.Add(btnSizer, 0, wx.ALL|wx.CENTER, 5)
  
@@ -80,11 +104,17 @@ class RegisterTab(wx.Panel):
         selectedMonth = str(self._date.GetValue().Month+1)
         selectedDay = str(self._date.GetValue().Day)
         selectedFile = str(self._path.GetValue())
+        selectedDescription = self._description.GetValue()
+        selectedLastName = self._lastName.GetValue()
+        selectedFirstName = self._firstName.GetValue()
 
         print 'Selected User: 							' + username
         print 'Selected Document type: 					' + selectedDocType
         print 'Selected Date: 							' + selectedDay + '/' + selectedMonth + '/' + selectedYear
+        print 'Selected Last Name: 						' + selectedLastName
+        print 'Selected First Name: 					' + selectedFirstName
         print 'Selected File: 							' + selectedFile
+        print 'Selected Description: 					' + selectedDescription
 
         dirName = os.path.dirname(selectedFile)
         fileNameWithExt = os.path.basename(selectedFile)
