@@ -4,8 +4,59 @@ import pyodbc
 import wx
 import admin_cfg
 
+def CreateDatabase(conn, curs):
+    curs.execute('CREATE DATABASE NumereDB')
+    curs.execute('USE NumereDB')
+    curs.execute("""CREATE TABLE [dbo].[docType](
+                    [id] [int] IDENTITY(1,1) NOT NULL,
+                    [doctype] [varchar](50) NOT NULL,
+                    [description] [varchar](500) NOT NULL,
+                 CONSTRAINT [PK_docType] PRIMARY KEY CLUSTERED
+                (
+                    [id] ASC
+                )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+                ) ON [PRIMARY]""")
+    curs.execute("""CREATE TABLE [dbo].[Users](
+                    [id] [int] IDENTITY(1,1) NOT NULL,
+                    [username] [varchar](50) NOT NULL,
+                    [firstname] [varchar](50) NOT NULL,
+                    [lastname] [varchar](50) NOT NULL,
+                    [password] [varchar](50) NOT NULL,
+                 CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED
+                (
+                    [id] ASC
+                )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+                ) ON [PRIMARY]""")
+    curs.execute("""CREATE TABLE [dbo].[Documents](
+                    [id] [int] IDENTITY(1,1) NOT NULL,
+                    [user_id] [int] NOT NULL,
+                    [doctype_id] [int] NOT NULL,
+                    [user_date] [date] NOT NULL,
+                    [system_date] [datetime] NOT NULL CONSTRAINT [DF_Documents_system_date]  DEFAULT (getdate()),
+                    [file_path] [varchar](512) NOT NULL,
+                    [first_name] [varchar](128) NOT NULL,
+                    [last_name] [varchar](128) NOT NULL,
+                    [description] [varchar](1024) NOT NULL,
+                 CONSTRAINT [PK_Documents] PRIMARY KEY CLUSTERED
+                (
+                    [id] ASC
+                )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+                ) ON [PRIMARY]""")
+    curs.execute("""ALTER TABLE [dbo].[Documents]  WITH CHECK ADD  CONSTRAINT [FK_Documents_docType] FOREIGN KEY([doctype_id])
+                    REFERENCES [dbo].[docType] ([id])""")
+    curs.execute('ALTER TABLE [dbo].[Documents] CHECK CONSTRAINT [FK_Documents_docType]')
+    curs.execute("""ALTER TABLE [dbo].[Documents]  WITH CHECK ADD  CONSTRAINT [FK_Documents_Users] FOREIGN KEY([user_id])
+                    REFERENCES [dbo].[Users] ([id])""")
+    curs.execute('ALTER TABLE [dbo].[Documents] CHECK CONSTRAINT [FK_Documents_Users]')
+
 def Connection():
     conn = pyodbc.connect(admin_cfg.DB_Connection, autocommit=True)
+    curs = conn.cursor()
+    try:
+        curs.execute('USE NumereDB')
+    except pyodbc.Error, err:
+        CreateDatabase(conn, curs)
+        curs.execute('USE NumereDB')
     return conn
 
 def AddNewUser(username, firstname, lastname):
