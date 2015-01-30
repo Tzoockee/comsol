@@ -20,6 +20,16 @@ def TestLogin(username, password):
         wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
     return status
 
+def ChangePassword(username, password):
+    userId = GetUserId(username)
+    try:
+        conn = Connection()
+        curs = conn.cursor()
+        curs.execute('UPDATE Users SET password = ? WHERE ID = ?', password, userId)
+        conn.close()
+    except pyodbc.Error, err:
+        wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
+
 def GetUserFullName(username):
     try:
         conn = Connection()

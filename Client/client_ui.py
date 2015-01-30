@@ -13,6 +13,17 @@ import sys
 
 authUser = ''
 
+def ChangePassword(authenticatedUser):
+    changePwdDlg = changePass.ChangePass(None, -1, 'Schimbare Parola')
+    ret = changePwdDlg.ShowModal()        
+    if ret == wx.ID_OK:
+        if database.TestLogin(authenticatedUser, changePwdDlg.GetOldPassword()):
+            database.ChangePassword(authenticatedUser, changePwdDlg.GetNewPassword())
+            wx.MessageBox('Parola a fost schimbata', 'Parola', wx.OK | wx.ICON_INFORMATION)
+        else:
+            wx.MessageBox('Autentificare esuata', 'Error', wx.OK | wx.ICON_ERROR)
+    changePwdDlg.Destroy()
+
 def DoLogin():
     loginDlg = login.Login(None, -1, 'Autentificare')
     ret = loginDlg.ShowModal()
@@ -27,7 +38,10 @@ def DoLogin():
     else:
         loginDlg.Destroy()
         sys.exit()
+    password = loginDlg.GetPassword()
     loginDlg.Destroy()
+    if password == authenticatedUser:
+        ChangePassword(authenticatedUser)
     return authenticatedUser
     
 def GetDateString(dateCtrl):
@@ -192,12 +206,7 @@ class OthersTab(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.OnChangePassword, changePwdBtn)
 
     def OnChangePassword(self, event):
-        changePwdDlg = changePass.ChangePass(None, -1, 'Schimbare Parola')
-        ret = changePwdDlg.ShowModal()        
-        if ret == wx.ID_OK:
-            print changePwdDlg.GetOldPassword()
-            print changePwdDlg.GetNewPassword()
-        changePwdDlg.Destroy()
+        ChangePassword(authUser)
 
 
 class ReportTab(wx.Panel):

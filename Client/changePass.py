@@ -48,6 +48,7 @@ class ChangePass(wx.Dialog):
  
 		self.panel.SetSizer(topSizer)
 		topSizer.Fit(self)
+		okBtn.SetDefault()
 	
 	def GetOldPassword(self):
 		return self._oldPass.GetValue()
@@ -57,6 +58,6 @@ class ChangePass(wx.Dialog):
 	
 	def OnOK(self, event):
 		if self._newPass1.GetValue() != self._newPass2.GetValue() or self._newPass1.GetValue() == '' :
-			print 'TODO: error'
+			wx.MessageBox('Parolele nu se potrivesc', 'Error', wx.OK | wx.ICON_ERROR)
 		else:
 			event.Skip()
