@@ -13,6 +13,21 @@ import sys
 
 authUser = ''
 
+def FillListCtrl(listCtrl, rows):
+    listCtrl.ClearAll()
+
+    if len(rows) == 0:
+        return
+        
+    for index, column in enumerate(rows[0].cursor_description):
+        listCtrl.InsertColumn(index+1, column[0])
+            
+    for index, row in enumerate(rows):
+        listCtrl.InsertStringItem(index, str(row[0]))
+        for indexCol, column in enumerate(row.cursor_description):
+            if indexCol > 0:
+                listCtrl.SetStringItem(index, indexCol, str(row[indexCol]))
+
 def ChangePassword(authenticatedUser):
     changePwdDlg = changePass.ChangePass(None, -1, 'Schimbare Parola')
     ret = changePwdDlg.ShowModal()        
@@ -270,22 +285,9 @@ class ReportTab(wx.Panel):
 
     def OnFillReport(self, event):
         selectedDocType = self._docType.GetString(self._docType.GetCurrentSelection())
-        
-        self._reportList.ClearAll()
-
         rows = database.GetReport(authUser, selectedDocType, GetDateString(self._dateFrom), GetDateString(self._dateTo))
-        if len(rows) == 0:
-            return
+        FillListCtrl(self._reportList, rows)
         
-        for index, column in enumerate(rows[0].cursor_description):
-            self._reportList.InsertColumn(index+1, column[0])
-            
-        for index, row in enumerate(rows):
-            self._reportList.InsertStringItem(index, str(row[0]))
-            for indexCol, column in enumerate(row.cursor_description):
-                if indexCol > 0:
-                    self._reportList.SetStringItem(index, indexCol, str(row[indexCol]))
-
     def OnReportDblClick(self, event):
         filePath = database.GetDocument(event.GetText())
         os.system(filePath)
