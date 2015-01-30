@@ -44,31 +44,25 @@ def DeleteDocType(docType):
     except pyodbc.Error, err:
         wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
 
-def FillUserList(userlist):
+def GetUsers():
     try:
         conn = Connection()
         curs = conn.cursor()
-        curs.execute('SELECT username, firstname, lastname FROM USERS')
-        index = 0
-        for row in curs:
-            userlist.InsertStringItem(index, str(row.username))
-            userlist.SetStringItem(index, 1, str(row.firstname))
-            userlist.SetStringItem(index, 2, str(row.lastname))
-            index = index + 1
+        curs.execute('SELECT username As Utilizator, lastname as Nume, firstname as Prenume FROM USERS')
+        rows = curs.fetchall()
         conn.close()
     except pyodbc.Error, err:
         wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
+    return rows
 
-def FillDocTypeList(docTypeList):
+def GetDocTypes():
     try:
         conn = Connection()
         curs = conn.cursor()
-        curs.execute('SELECT doctype, description FROM DocType')
-        index = 0
-        for row in curs:
-            docTypeList.InsertStringItem(index, str(row.doctype))
-            docTypeList.SetStringItem(index, 1, str(row.description))
-            index = index + 1
+        curs.execute('SELECT docType As Tip, description as Descriere FROM DocType')
+        rows = curs.fetchall()
         conn.close()
     except pyodbc.Error, err:
         wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
+    return rows
+

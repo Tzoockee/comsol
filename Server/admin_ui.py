@@ -4,6 +4,21 @@ import newDocType
 import pyodbc
 import database
 
+def FillListCtrl(listCtrl, rows):
+    listCtrl.ClearAll()
+
+    if len(rows) == 0:
+        return
+        
+    for index, column in enumerate(rows[0].cursor_description):
+        listCtrl.InsertColumn(index+1, column[0])
+            
+    for index, row in enumerate(rows):
+        listCtrl.InsertStringItem(index, str(row[0]))
+        for indexCol, column in enumerate(row.cursor_description):
+            if indexCol > 0:
+                listCtrl.SetStringItem(index, indexCol, str(row[indexCol]))
+
 class UsersTab(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
@@ -51,8 +66,8 @@ class UsersTab(wx.Panel):
             self.RefreshUserList()
         
     def RefreshUserList(self):
-        self._userList.DeleteAllItems()
-        database.FillUserList(self._userList)
+        rows = database.GetUsers()
+        FillListCtrl(self._userList, rows)
 
 class DocTypeTab(wx.Panel):
     def __init__(self, parent):
@@ -86,8 +101,8 @@ class DocTypeTab(wx.Panel):
         self.RefreshDocTypeList()
 
     def RefreshDocTypeList(self):
-        self._docTypeList.DeleteAllItems()
-        database.FillDocTypeList(self._docTypeList)
+        rows = database.GetDocTypes()
+        FillListCtrl(self._docTypeList, rows)
 
     def OnNewDocType(self, event):
         newDocTypeDlg = newDocType.NewDocType(None, -1, 'Tip Document Nou')
