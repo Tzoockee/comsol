@@ -2,13 +2,15 @@ __author__ = 'Costin'
 
 import pyodbc
 import wx
+import admin_cfg
 
-#connString = 'DRIVER={SQL Server};SERVER=LAPTOP\SQLSERVEREXPRESS;DATABASE=NumereDB;UID=sa;PWD=alibaba'
-connString = 'DSN=NumereDB;Trusted_Connection=yes'
+def Connection():
+    conn = pyodbc.connect(admin_cfg.DB_Connection, autocommit=True)
+    return conn
 
 def AddNewUser(username, firstname, lastname):
     try:
-        conn = pyodbc.connect(connString, autocommit=True)
+        conn = Connection()
         curs = conn.cursor()
         curs.execute('INSERT INTO USERS(username, firstname, lastname, password) VALUES(?, ?, ?, ?)', username, firstname, lastname, username)
         conn.close()
@@ -17,7 +19,7 @@ def AddNewUser(username, firstname, lastname):
 		
 def AddNewDocType(docType, description):
     try:
-        conn = pyodbc.connect(connString, autocommit=True)
+        conn = Connection()
         curs = conn.cursor()
         curs.execute('INSERT INTO DocType(docType, description) VALUES(?, ?)', docType, description)
         conn.close()
@@ -26,7 +28,7 @@ def AddNewDocType(docType, description):
 
 def DeleteUser(username):
     try:
-        conn = pyodbc.connect(connString, autocommit=True)
+        conn = Connection()
         curs = conn.cursor()
         curs.execute('DELETE FROM USERS WHERE username = ''?''', username)
         conn.close()
@@ -35,7 +37,7 @@ def DeleteUser(username):
 		
 def DeleteDocType(docType):
     try:
-        conn = pyodbc.connect(connString, autocommit=True)
+        conn = Connection()
         curs = conn.cursor()
         curs.execute('DELETE FROM DocTypes WHERE docType = ''?''', docType)
         conn.close()
@@ -44,7 +46,7 @@ def DeleteDocType(docType):
 
 def FillUserList(userlist):
     try:
-        conn = pyodbc.connect(connString, autocommit=True)
+        conn = Connection()
         curs = conn.cursor()
         curs.execute('SELECT username, firstname, lastname FROM USERS')
         index = 0
@@ -59,7 +61,7 @@ def FillUserList(userlist):
 
 def FillDocTypeList(docTypeList):
     try:
-        conn = pyodbc.connect(connString, autocommit=True)
+        conn = Connection()
         curs = conn.cursor()
         curs.execute('SELECT doctype, description FROM DocType')
         index = 0
