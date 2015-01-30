@@ -5,6 +5,8 @@ import changePass
 import client_cfg
 import database
 
+from prettytable import PrettyTable
+
 from datetime import datetime
 import time
 import os
@@ -27,6 +29,22 @@ def FillListCtrl(listCtrl, rows):
         for indexCol, column in enumerate(row.cursor_description):
             if indexCol > 0:
                 listCtrl.SetStringItem(index, indexCol, str(row[indexCol]))
+
+def PrintReport(rows):
+    if len(rows) == 0:
+        return
+    
+    col_names = [cn[0] for cn in rows[0].cursor_description]
+    x = PrettyTable(col_names)
+    for row in rows:
+        x.add_row(row)
+
+    t = open('Report.txt', 'w')
+    t.write(x.get_string())
+    t.close()
+    os.system('notepad.exe /P Report.txt')
+    os.system('rm Report.txt')
+
 
 def ChangePassword(authenticatedUser):
     changePwdDlg = changePass.ChangePass(None, -1, 'Schimbare Parola')
@@ -237,7 +255,8 @@ class ReportTab(wx.Panel):
         labelDateTo = wx.StaticText(self, wx.ID_ANY, 'Pana la:')
         self._dateTo = wx.DatePickerCtrl(self, wx.ID_ANY, style = wx.DP_DEFAULT | wx.DP_DROPDOWN)
 
-        reportBtn = wx.Button(self, wx.ID_OK, 'Genereaza')        
+        reportBtn = wx.Button(self, wx.ID_ANY, 'Genereaza')
+        printBtn = wx.Button(self, wx.ID_ANY, 'Tipareste')        
 
         self._reportList = wx.ListCtrl(self, -1, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
 
@@ -257,6 +276,7 @@ class ReportTab(wx.Panel):
 
         sizerBtn         = wx.BoxSizer(wx.HORIZONTAL)
         sizerBtn.Add(reportBtn, 0, wx.ALL, 5)
+        sizerBtn.Add(printBtn, 0, wx.ALL, 5)
 
         topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
         topSizer.Add(wx.StaticText(self, wx.ID_ANY, database.GetUserFullName(authUser)), 0, wx.ALL|wx.EXPAND, 5)
@@ -272,6 +292,7 @@ class ReportTab(wx.Panel):
 
         #events
         self.Bind(wx.EVT_BUTTON, self.OnFillReport, reportBtn)
+        self.Bind(wx.EVT_BUTTON, self.OnPrintReport, printBtn)
         self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnReportDblClick, self._reportList)
 
         #initialization
@@ -287,6 +308,11 @@ class ReportTab(wx.Panel):
         selectedDocType = self._docType.GetString(self._docType.GetCurrentSelection())
         rows = database.GetReport(authUser, selectedDocType, GetDateString(self._dateFrom), GetDateString(self._dateTo))
         FillListCtrl(self._reportList, rows)
+
+    def OnPrintReport(self, event):
+        selectedDocType = self._docType.GetString(self._docType.GetCurrentSelection())
+        rows = database.GetReport(authUser, selectedDocType, GetDateString(self._dateFrom), GetDateString(self._dateTo))
+        PrintReport(rows)
         
     def OnReportDblClick(self, event):
         filePath = database.GetDocument(event.GetText())

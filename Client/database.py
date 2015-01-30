@@ -3,6 +3,7 @@ __author__ = 'Costin'
 import pyodbc
 import wx
 import client_cfg
+import os
 
 def Connection():
     conn = pyodbc.connect(client_cfg.DB_Connection, autocommit=True)
