@@ -80,7 +80,7 @@ def AddDocument(authUser, docType, userDate, lastName, firstName, filePath, desc
     try:
         conn = Connection()
         curs = conn.cursor()
-        #curs.execute('SET DATEFORMAT dmy')
+        curs.execute('SET DATEFORMAT dmy')
         curs.execute('INSERT INTO Documents(user_id, doctype_id, user_date, file_path, first_name, last_name, description) VALUES (?, ?, ?, ?, ?, ?, ?)', userId, docTypeId, userDate, filePath, firstName, lastName, description)
         curs.execute('SELECT @@IDENTITY As newNumber')
         row = curs.fetchone()
@@ -106,6 +106,7 @@ def GetReport(authUser, docType, dateFrom, dateTo):
     try:        
         conn = Connection()
         curs = conn.cursor()
+        curs.execute('SET DATEFORMAT dmy')
         curs.execute("""SELECT 
                             D.id As Numar,
                             D.user_date As Data,
