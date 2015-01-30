@@ -2,13 +2,15 @@ __author__ = 'Costin'
 
 import pyodbc
 import wx
+import client_cfg
 
-#connString = 'DRIVER={SQL Server};SERVER=LAPTOP\SQLSERVEREXPRESS;DATABASE=NumereDB;UID=sa;PWD=alibaba'
-connString = 'DSN=NumereDB;Trusted_Connection=yes'
+def Connection():
+    conn = pyodbc.connect(client_cfg.DB_Connection, autocommit=True)
+    return conn
 
 def TestLogin(username, password):
     try:
-        conn = pyodbc.connect(connString, autocommit=True)
+        conn = Connection()
         curs = conn.cursor()
         curs.execute('SELECT COUNT(*) AS Status FROM USERS WHERE username = ? and password = ?', username, password)
         row = curs.fetchone()
@@ -20,7 +22,7 @@ def TestLogin(username, password):
 
 def GetUserFullName(username):
     try:
-        conn = pyodbc.connect(connString, autocommit=True)
+        conn = Connection()
         curs = conn.cursor()
         curs.execute('SELECT firstname, lastname FROM USERS WHERE username = ?', username)
         row = curs.fetchone()
@@ -31,7 +33,7 @@ def GetUserFullName(username):
 
 def GetDocumentTypes():
     try:
-        conn = pyodbc.connect(connString, autocommit=True)
+        conn = Connection()
         curs = conn.cursor()
         curs.execute('SELECT docType FROM DocType')
         rows = curs.fetchall()
@@ -42,7 +44,7 @@ def GetDocumentTypes():
 
 def GetUserId(username):
     try:
-        conn = pyodbc.connect(connString, autocommit=True)
+        conn = Connection()
         curs = conn.cursor()
         curs.execute('SELECT id FROM Users WHERE username = ?', username)
         row = curs.fetchone()
@@ -53,7 +55,7 @@ def GetUserId(username):
 
 def GetDocTypeId(docType):
     try:
-        conn = pyodbc.connect(connString, autocommit=True)
+        conn = Connection()
         curs = conn.cursor()
         curs.execute('SELECT id FROM DocType WHERE docType = ?', docType)
         row = curs.fetchone()
@@ -66,7 +68,7 @@ def AddDocument(authUser, docType, userDate, lastName, firstName, filePath, desc
     userId = GetUserId(authUser)
     docTypeId = GetDocTypeId(docType)
     try:
-        conn = pyodbc.connect(connString, autocommit=True)
+        conn = Connection()
         curs = conn.cursor()
         #curs.execute('SET DATEFORMAT dmy')
         curs.execute('INSERT INTO Documents(user_id, doctype_id, user_date, file_path, first_name, last_name, description) VALUES (?, ?, ?, ?, ?, ?, ?)', userId, docTypeId, userDate, filePath, firstName, lastName, description)
@@ -79,7 +81,7 @@ def AddDocument(authUser, docType, userDate, lastName, firstName, filePath, desc
 
 def GetDocument(number):
     try:
-        conn = pyodbc.connect(connString, autocommit=True)
+        conn = Connection()
         curs = conn.cursor()
         curs.execute('SELECT file_path FROM Documents WHERE ID = ?', number)
         row = curs.fetchone()
@@ -92,7 +94,7 @@ def GetReport(authUser, docType, dateFrom, dateTo):
     userId = GetUserId(authUser)
     docTypeId = GetDocTypeId(docType)
     try:        
-        conn = pyodbc.connect(connString, autocommit=True)
+        conn = Connection()
         curs = conn.cursor()
         curs.execute("""SELECT 
                             D.id As Numar,
