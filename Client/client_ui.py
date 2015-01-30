@@ -13,6 +13,11 @@ import sys
 
 authUser = ''
 
+def GetDateString(dateCtrl):
+    selectedYear = str(dateCtrl.GetValue().Year)
+    selectedMonth = str(dateCtrl.GetValue().Month+1)
+    selectedDay = str(dateCtrl.GetValue().Day)
+    return selectedDay + '/' + selectedMonth + '/' + selectedYear
 
 class RegisterTab(wx.Panel):
     def __init__(self, parent):
@@ -122,7 +127,7 @@ class RegisterTab(wx.Panel):
 
         print 'Selected User: 							' + authUser
         print 'Selected Document type: 					' + selectedDocType
-        print 'Selected Date: 							' + selectedDay + '/' + selectedMonth + '/' + selectedYear
+        print 'Selected Date: 							' + GetDateString(self._date)
         print 'Selected Last Name: 						' + selectedLastName
         print 'Selected First Name: 					' + selectedFirstName
         print 'Selected File: 							' + selectedFile
@@ -139,7 +144,7 @@ class RegisterTab(wx.Panel):
         except (IOError, os.error) as why:
             wx.MessageBox(str(why), 'Error', wx.OK | wx.ICON_ERROR)
 
-        newNumber = database.AddDocument(authUser, selectedDocType, selectedDay + '/' + selectedMonth + '/' + selectedYear, selectedLastName, selectedFirstName, destFile, selectedDescription)
+        newNumber = database.AddDocument(authUser, selectedDocType, GetDateString(self._date), selectedLastName, selectedFirstName, destFile, selectedDescription)
         wx.MessageBox(str(newNumber), 'Error', wx.OK | wx.ICON_INFORMATION)
 
         self._lastName.SetValue('')
@@ -177,6 +182,88 @@ class OthersTab(wx.Panel):
             print changePwdDlg.GetNewPassword()
         changePwdDlg.Destroy()
 
+
+class ReportTab(wx.Panel):
+    def __init__(self, parent):
+        wx.Panel.__init__(self, parent)
+
+        labelDocType = wx.StaticText(self, wx.ID_ANY, 'Tip Document')
+        self._docType = wx.ComboBox(self, -1, style = wx.CB_READONLY)
+
+        labelDateFrom = wx.StaticText(self, wx.ID_ANY, 'De la:')
+        self._dateFrom = wx.DatePickerCtrl(self, wx.ID_ANY, style = wx.DP_DEFAULT | wx.DP_DROPDOWN)
+
+        labelDateTo = wx.StaticText(self, wx.ID_ANY, 'Pana la:')
+        self._dateTo = wx.DatePickerCtrl(self, wx.ID_ANY, style = wx.DP_DEFAULT | wx.DP_DROPDOWN)
+
+        reportBtn = wx.Button(self, wx.ID_OK, 'Genereaza')        
+
+        self._reportList = wx.ListCtrl(self, -1, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
+
+        topSizer        = wx.BoxSizer(wx.VERTICAL)        
+
+        sizerDocType    = wx.BoxSizer(wx.HORIZONTAL)
+        sizerDocType.Add(labelDocType, 0, wx.ALL, 5)
+        sizerDocType.Add(self._docType, 1, wx.ALL|wx.EXPAND, 5)
+
+        sizerDateFrom    = wx.BoxSizer(wx.HORIZONTAL)
+        sizerDateFrom.Add(labelDateFrom, 0, wx.ALL, 5)
+        sizerDateFrom.Add(self._dateFrom, 1, wx.ALL|wx.EXPAND, 5)
+
+        sizerDateTo      = wx.BoxSizer(wx.HORIZONTAL)
+        sizerDateTo.Add(labelDateTo, 0, wx.ALL, 5)
+        sizerDateTo.Add(self._dateTo, 1, wx.ALL|wx.EXPAND, 5)
+
+        sizerBtn         = wx.BoxSizer(wx.HORIZONTAL)
+        sizerBtn.Add(reportBtn, 0, wx.ALL, 5)
+
+        topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
+        topSizer.Add(wx.StaticText(self, wx.ID_ANY, database.GetUserFullName(authUser)), 0, wx.ALL|wx.EXPAND, 5)
+        topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
+        topSizer.Add(sizerDocType, 0, wx.ALL | wx.EXPAND, 5)
+        topSizer.Add(sizerDateFrom, 0, wx.ALL | wx.EXPAND, 5)
+        topSizer.Add(sizerDateTo, 0, wx.ALL | wx.EXPAND, 5)
+        topSizer.Add(sizerBtn, 0, wx.CENTER, 5)
+        topSizer.Add(self._reportList, 0, wx.ALL|wx.EXPAND, 5)
+ 
+        self.SetSizer(topSizer)
+        topSizer.Fit(self)
+
+        #events
+        self.Bind(wx.EVT_BUTTON, self.OnFillReport, reportBtn)
+        self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnReportDblClick, self._reportList)
+
+        #initialization
+        self.FillDocTypes()
+
+    def FillDocTypes(self):
+        docTypes = database.GetDocumentTypes()
+        for docType in docTypes:
+            self._docType.Append(docType[0])
+        self._docType.SetSelection(0)
+
+    def OnFillReport(self, event):
+        selectedDocType = self._docType.GetString(self._docType.GetCurrentSelection())
+        
+        self._reportList.ClearAll()
+
+        rows = database.GetReport(authUser, selectedDocType, GetDateString(self._dateFrom), GetDateString(self._dateTo))
+        if len(rows) == 0:
+            return
+        
+        for index, column in enumerate(rows[0].cursor_description):
+            self._reportList.InsertColumn(index+1, column[0])
+            
+        for index, row in enumerate(rows):
+            self._reportList.InsertStringItem(index, str(row[0]))
+            for indexCol, column in enumerate(row.cursor_description):
+                if indexCol > 0:
+                    self._reportList.SetStringItem(index, indexCol, str(row[indexCol]))
+
+    def OnReportDblClick(self, event):
+        filePath = database.GetDocument(event.GetText())
+        os.system(filePath)
+
 class Tabs(wx.Notebook):
     def __init__(self, parent):
         wx.Notebook.__init__(self, parent, id=wx.ID_ANY, style=wx.BK_DEFAULT)
@@ -186,6 +273,9 @@ class Tabs(wx.Notebook):
         
         othersTab = OthersTab(self)
         self.AddPage(othersTab, "Altele")
+
+        reportTab = ReportTab(self)
+        self.AddPage(reportTab, "Raport")
         
 class MainFrame(wx.Frame):
     def __init__(self, *args, **kwargs):
