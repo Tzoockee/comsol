@@ -16,6 +16,11 @@ def CreateDatabase(conn, curs):
                     [id] ASC
                 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
                 ) ON [PRIMARY]""")
+    curs.execute("""CREATE UNIQUE NONCLUSTERED INDEX [IX_docType] ON [dbo].[docType]
+                    (
+                        [doctype] ASC
+                    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+                    """)
     curs.execute("""CREATE TABLE [dbo].[Users](
                     [id] [int] IDENTITY(1,1) NOT NULL,
                     [username] [varchar](50) NOT NULL,
@@ -27,6 +32,11 @@ def CreateDatabase(conn, curs):
                     [id] ASC
                 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
                 ) ON [PRIMARY]""")
+    curs.execute("""CREATE UNIQUE NONCLUSTERED INDEX [IX_Users] ON [dbo].[Users]
+                    (
+                        [username] ASC
+                    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+                    """)
     curs.execute("""CREATE TABLE [dbo].[Documents](
                     [id] [int] IDENTITY(1,1) NOT NULL,
                     [user_id] [int] NOT NULL,
