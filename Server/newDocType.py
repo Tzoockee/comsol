@@ -38,6 +38,7 @@ class NewDocType(wx.Dialog):
  
         self.panel.SetSizer(topSizer)
         topSizer.Fit(self)
+        okBtn.SetDefault()
 
     def GetDocumentType(self):
         return self._docType.GetValue()

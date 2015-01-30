@@ -46,6 +46,7 @@ class NewUser(wx.Dialog):
  
         self.panel.SetSizer(topSizer)
         topSizer.Fit(self)
+        okBtn.SetDefault()
         
 
     def GetUserName(self):
