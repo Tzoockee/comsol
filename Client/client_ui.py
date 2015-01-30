@@ -13,6 +13,23 @@ import sys
 
 authUser = ''
 
+def DoLogin():
+    loginDlg = login.Login(None, -1, 'Autentificare')
+    ret = loginDlg.ShowModal()
+    authenticatedUser = ''
+    if ret == wx.ID_OK:
+        if database.TestLogin(loginDlg.GetUserName(), loginDlg.GetPassword()):
+            authenticatedUser = loginDlg.GetUserName()
+        else:
+            wx.MessageBox('Autentificare esuata', 'Error', wx.OK | wx.ICON_ERROR)
+            loginDlg.Destroy()
+            sys.exit()
+    else:
+        loginDlg.Destroy()
+        sys.exit()
+    loginDlg.Destroy()
+    return authenticatedUser
+    
 def GetDateString(dateCtrl):
     selectedYear = str(dateCtrl.GetValue().Year)
     selectedMonth = str(dateCtrl.GetValue().Month+1)
@@ -288,23 +305,9 @@ class MainFrame(wx.Frame):
         sizer.Fit(self)
         self.Layout()
 
+
 app = wx.App()
-
-#Login section
-loginDlg = login.Login(None, -1, 'Autentificare')
-ret = loginDlg.ShowModal()
-if ret == wx.ID_OK:
-    if database.TestLogin(loginDlg.GetUserName(), loginDlg.GetPassword()):
-        authUser = loginDlg.GetUserName()
-    else:
-        wx.MessageBox('Autentificare esuata', 'Error', wx.OK | wx.ICON_ERROR)
-        loginDlg.Destroy()
-        sys.exit()
-else:
-    loginDlg.Destroy()
-    sys.exit()
-
-loginDlg.Destroy()
+authUser = DoLogin()
 		
 #main frame
 frame = MainFrame(None, -1, 'Client')
