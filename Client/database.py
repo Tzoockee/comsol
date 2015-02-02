@@ -88,6 +88,7 @@ def AddDocument(authUser, docType, userDate, lastName, firstName, filePath, desc
         conn.close()
     except pyodbc.Error, err:
         wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
+        return ''
     return str(row.newNumber) + ' - ' + userDate
 
 def GetDocument(number):

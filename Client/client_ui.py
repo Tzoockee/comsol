@@ -24,11 +24,10 @@ def FillListCtrl(listCtrl, rows):
     for index, column in enumerate(rows[0].cursor_description):
         listCtrl.InsertColumn(index+1, column[0])
             
-    for index, row in enumerate(rows):
-        listCtrl.InsertStringItem(index, str(row[0]))
-        for indexCol, column in enumerate(row.cursor_description):
-            if indexCol > 0:
-                listCtrl.SetStringItem(index, indexCol, str(row[indexCol]))
+    for indexRow, row in enumerate(rows):
+        listCtrl.InsertStringItem(indexRow, str(row[0]))
+        for indexCol, column in enumerate(row.cursor_description[1:]):
+            listCtrl.SetStringItem(indexRow, indexCol, str(row[indexCol]))
 
 def PrintReport(rows):
     if len(rows) == 0:
@@ -189,26 +188,21 @@ class RegisterTab(wx.Panel):
             wx.MessageBox('Nu toate campurile sunt completate', 'Error', wx.OK | wx.ICON_ERROR)
             return
 
-        print 'Selected User: 							' + authUser
-        print 'Selected Document type: 					' + selectedDocType
-        print 'Selected Date: 							' + GetDateString(self._date)
-        print 'Selected Last Name: 						' + selectedLastName
-        print 'Selected First Name: 					' + selectedFirstName
-        print 'Selected File: 							' + selectedFile
-        print 'Selected Description: 					' + selectedDescription
-
         dirName = os.path.dirname(selectedFile)
         fileNameWithExt = os.path.basename(selectedFile)
         fileName, fileExtension = os.path.splitext(fileNameWithExt)
         newFileName = authUser + '_' + selectedYear + '_' + selectedMonth + '_' + selectedDay + '_' + str(time.time()).replace('.', '_') + fileExtension
         destFile = os.path.join(os.path.sep, client_cfg.docRepositoryPath, newFileName)
-        print 'Destination File: 						' + destFile
         try:
             shutil.copy2(self._path.GetValue(), destFile)
         except (IOError, os.error) as why:
             wx.MessageBox(str(why), 'Error', wx.OK | wx.ICON_ERROR)
+            return
 
         newNumber = database.AddDocument(authUser, selectedDocType, GetDateString(self._date), selectedLastName, selectedFirstName, destFile, selectedDescription)
+        if newNumber == '':
+            return
+        
         wx.MessageBox(str(newNumber), 'Error', wx.OK | wx.ICON_INFORMATION)
 
         self._lastName.SetValue('')
