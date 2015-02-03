@@ -7,6 +7,8 @@ import os
 
 def Connection():
     conn = pyodbc.connect(client_cfg.DB_Connection, autocommit=True)
+    curs = conn.cursor()
+    curs.execute('SET DATEFORMAT dmy')
     return conn
 
 def TestLogin(username, password):
@@ -19,6 +21,7 @@ def TestLogin(username, password):
         status = False if row.Status < 1 else True
     except pyodbc.Error, err:
         wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
+        return False
     return status
 
 def ChangePassword(username, password):
@@ -80,11 +83,12 @@ def AddDocument(authUser, docType, userDate, lastName, firstName, filePath, desc
     docTypeId = GetDocTypeId(docType)
     try:
         conn = Connection()
+        conn.autocommit = False
         curs = conn.cursor()
-        curs.execute('SET DATEFORMAT dmy')
         curs.execute('INSERT INTO Documents(user_id, doctype_id, user_date, file_path, first_name, last_name, description) VALUES (?, ?, ?, ?, ?, ?, ?)', userId, docTypeId, userDate, filePath, firstName, lastName, description)
         curs.execute('SELECT @@IDENTITY As newNumber')
         row = curs.fetchone()
+        curs.commit()
         conn.close()
     except pyodbc.Error, err:
         wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
@@ -108,7 +112,6 @@ def GetReport(authUser, docType, dateFrom, dateTo):
     try:        
         conn = Connection()
         curs = conn.cursor()
-        curs.execute('SET DATEFORMAT dmy')
         curs.execute("""SELECT 
                             D.id As Numar,
                             D.user_date As Data,
