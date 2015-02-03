@@ -4,14 +4,13 @@ import login
 import changePass
 import client_cfg
 import database
-
-from prettytable import PrettyTable
-
-from datetime import datetime
 import time
 import os
 import shutil
 import sys
+import uiPanel
+from prettytable import PrettyTable
+from datetime import datetime
 
 authUser = ''
 
@@ -43,7 +42,6 @@ def PrintReport(rows):
     t.close()
     os.system('notepad.exe /P Report.txt')
     os.system('rm Report.txt')
-
 
 def ChangePassword(authenticatedUser):
     changePwdDlg = changePass.ChangePass(None, -1, 'Schimbare Parola')
@@ -82,99 +80,29 @@ def GetDateString(dateCtrl):
     selectedDay = str(dateCtrl.GetValue().Day)
     return selectedDay + '/' + selectedMonth + '/' + selectedYear
 
-class RegisterTab(wx.Panel):
+class RegisterTab(uiPanel.UIPanel):
     def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
+        uiPanel.UIPanel.__init__(self, parent, database.GetUserFullName(authUser))
 
-        labelDocType = wx.StaticText(self, wx.ID_ANY, 'Tip Document')
-        self._docType = wx.ComboBox(self, -1, style = wx.CB_READONLY)
- 
-        labelDate = wx.StaticText(self, wx.ID_ANY, 'Data')
-        self._date = wx.DatePickerCtrl(self, wx.ID_ANY, style = wx.DP_DEFAULT | wx.DP_DROPDOWN)
+        self._docType =     self.AddLine('Tip Document', uiPanel.uiType.combo)
+        self._date =        self.AddLine('Data', uiPanel.uiType.date)
+        self._lastName =    self.AddLine('Nume', uiPanel.uiType.text)
+        self._firstName =   self.AddLine('Prenume', uiPanel.uiType.text)
+        self._path =        self.AddLine('Cale Document', uiPanel.uiType.filePath)
+        self._description = self.AddLine('Descriere', uiPanel.uiType.text, wx.TE_MULTILINE, size = (-1, 100))
+        registerBtn, =      self.AddButtons('Inregistrare')
 
-        labelPath = wx.StaticText(self, wx.ID_ANY, 'Cale Document')
-        self._path = wx.TextCtrl(self, wx.ID_ANY, '', style = wx.TE_READONLY)
-        browseBtn = wx.Button(self, wx.ID_ANY, '...')  
-
-        labelDesc = wx.StaticText(self, wx.ID_ANY, 'Descriere')
-        self._description = wx.TextCtrl(self, wx.ID_ANY, '', style = wx.TE_MULTILINE, size = (-1, 100))
-
-        labelLastName = wx.StaticText(self, wx.ID_ANY, 'Nume')
-        self._lastName = wx.TextCtrl(self, wx.ID_ANY, '')
-		
-        labelFirstName = wx.StaticText(self, wx.ID_ANY, 'Prenume')
-        self._firstName = wx.TextCtrl(self, wx.ID_ANY, '')
-		
-        registerBtn = wx.Button(self, wx.ID_OK, 'Inregistrare')        
- 
-        topSizer        = wx.BoxSizer(wx.VERTICAL)
-        sizerDocType    = wx.BoxSizer(wx.HORIZONTAL)
-        sizerDate       = wx.BoxSizer(wx.HORIZONTAL)
-        sizerPath       = wx.BoxSizer(wx.HORIZONTAL)
-        sizerDesc       = wx.BoxSizer(wx.HORIZONTAL)
-        sizerLastName   = wx.BoxSizer(wx.HORIZONTAL)
-        sizerFirstName  = wx.BoxSizer(wx.HORIZONTAL)		
-        btnSizer        = wx.BoxSizer(wx.HORIZONTAL)
- 
-        sizerDocType.Add(labelDocType, 0, wx.ALL, 5)
-        sizerDocType.Add(self._docType, 1, wx.ALL|wx.EXPAND, 5)
- 
-        sizerDate.Add(labelDate, 0, wx.ALL, 5)
-        sizerDate.Add(self._date, 1, wx.ALL|wx.EXPAND, 5)
-		
-        sizerPath.Add(labelPath, 0, wx.ALL, 5)
-        sizerPath.Add(self._path, 1, wx.ALL|wx.EXPAND, 5)
-        sizerPath.Add(browseBtn, 1, wx.ALL, 5)
- 
-        sizerDesc.Add(labelDesc, 0, wx.ALL, 5)
-        sizerDesc.Add(self._description, 1, wx.ALL|wx.EXPAND, 5)
- 
-        sizerLastName.Add(labelLastName, 0, wx.ALL, 5)
-        sizerLastName.Add(self._lastName, 1, wx.ALL|wx.EXPAND, 5)
-
-        sizerFirstName.Add(labelFirstName, 0, wx.ALL, 5)
-        sizerFirstName.Add(self._firstName, 1, wx.ALL|wx.EXPAND, 5)
-		
-        btnSizer.Add(registerBtn, 0, wx.CENTER, 5)
- 
-        topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(wx.StaticText(self, wx.ID_ANY, database.GetUserFullName(authUser)), 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(sizerDocType, 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(sizerDate, 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(sizerLastName, 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(sizerFirstName, 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(sizerPath, 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(sizerDesc, 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(btnSizer, 0, wx.ALL|wx.CENTER, 5)
- 
-        self.SetSizer(topSizer)
-        topSizer.Fit(self)
-        registerBtn.SetDefault()
-
-        #events
-        self.Bind(wx.EVT_BUTTON, self.OnFileBrowse, browseBtn)
         self.Bind(wx.EVT_BUTTON, self.OnRegister, registerBtn)
-		
-        #initialize
+        registerBtn.SetDefault()
         self.FillDocTypes()
-    
+
     def FillDocTypes(self):
         docTypes = database.GetDocumentTypes()
         for docType in docTypes:
             self._docType.Append(docType[0])
         self._docType.SetSelection(0)
-		
-    def OnFileBrowse(self, event):
-        dialog = wx.FileDialog(self, "Selectati fisierul...", "", "", "Word files (*.doc)|*.doc|PDF files (*.pdf)|*.pdf|All files (*.*)|*.*", wx.FD_OPEN | wx.FD_CHANGE_DIR)
-        if dialog.ShowModal() == wx.ID_OK:
-            self._path.SetValue(str(dialog.GetPath()))
-        dialog.Destroy()
 
     def OnRegister(self, event):
-        #First copy the file and get the new name and path
-        #https://msdn.microsoft.com/en-us/library/aa259188(SQL.80).aspx
         selectedDocType = self._docType.GetString(self._docType.GetCurrentSelection())
         selectedYear = str(self._date.GetValue().Year)
         selectedMonth = str(self._date.GetValue().Month+1)
@@ -203,86 +131,34 @@ class RegisterTab(wx.Panel):
         if newNumber == '':
             return
         
-        wx.MessageBox(str(newNumber), 'Error', wx.OK | wx.ICON_INFORMATION)
+        wx.MessageBox(str(newNumber), 'Info', wx.OK | wx.ICON_INFORMATION)
 
         self._lastName.SetValue('')
         self._firstName.SetValue('')
         self._path.SetValue('')
         self._description.SetValue('')
 
-class OthersTab(wx.Panel):
+
+class OthersTab(uiPanel.UIPanel):
     def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
+        uiPanel.UIPanel.__init__(self, parent, database.GetUserFullName(authUser))
 
-        changePwdBtn = wx.Button(self, wx.ID_ANY, 'Schimbare Parola')
-		
-        topSizer        = wx.BoxSizer(wx.VERTICAL)
-        sizerBtn        = wx.BoxSizer(wx.HORIZONTAL)			
-		
-        sizerBtn.Add(changePwdBtn, 0, wx.ALL, 5)
-
-        topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(wx.StaticText(self, wx.ID_ANY, database.GetUserFullName(authUser)), 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(sizerBtn, 0, wx.ALL|wx.EXPAND, 5)
- 
-        self.SetSizer(topSizer)
-        topSizer.Fit(self)
-
-        #events
+        changePwdBtn, = self.AddButtons('Schimbare Parola')
         self.Bind(wx.EVT_BUTTON, self.OnChangePassword, changePwdBtn)
 
     def OnChangePassword(self, event):
         ChangePassword(authUser)
 
 
-class ReportTab(wx.Panel):
+class ReportTab(uiPanel.UIPanel):
     def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
+        uiPanel.UIPanel.__init__(self, parent, database.GetUserFullName(authUser))
 
-        labelDocType = wx.StaticText(self, wx.ID_ANY, 'Tip Document')
-        self._docType = wx.ComboBox(self, -1, style = wx.CB_READONLY)
-
-        labelDateFrom = wx.StaticText(self, wx.ID_ANY, 'De la:')
-        self._dateFrom = wx.DatePickerCtrl(self, wx.ID_ANY, style = wx.DP_DEFAULT | wx.DP_DROPDOWN)
-
-        labelDateTo = wx.StaticText(self, wx.ID_ANY, 'Pana la:')
-        self._dateTo = wx.DatePickerCtrl(self, wx.ID_ANY, style = wx.DP_DEFAULT | wx.DP_DROPDOWN)
-
-        reportBtn = wx.Button(self, wx.ID_ANY, 'Genereaza')
-        printBtn = wx.Button(self, wx.ID_ANY, 'Tipareste')        
-
-        self._reportList = wx.ListCtrl(self, -1, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
-
-        topSizer        = wx.BoxSizer(wx.VERTICAL)        
-
-        sizerDocType    = wx.BoxSizer(wx.HORIZONTAL)
-        sizerDocType.Add(labelDocType, 0, wx.ALL, 5)
-        sizerDocType.Add(self._docType, 1, wx.ALL|wx.EXPAND, 5)
-
-        sizerDateFrom    = wx.BoxSizer(wx.HORIZONTAL)
-        sizerDateFrom.Add(labelDateFrom, 0, wx.ALL, 5)
-        sizerDateFrom.Add(self._dateFrom, 1, wx.ALL|wx.EXPAND, 5)
-
-        sizerDateTo      = wx.BoxSizer(wx.HORIZONTAL)
-        sizerDateTo.Add(labelDateTo, 0, wx.ALL, 5)
-        sizerDateTo.Add(self._dateTo, 1, wx.ALL|wx.EXPAND, 5)
-
-        sizerBtn         = wx.BoxSizer(wx.HORIZONTAL)
-        sizerBtn.Add(reportBtn, 0, wx.ALL, 5)
-        sizerBtn.Add(printBtn, 0, wx.ALL, 5)
-
-        topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(wx.StaticText(self, wx.ID_ANY, database.GetUserFullName(authUser)), 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(sizerDocType, 0, wx.ALL | wx.EXPAND, 5)
-        topSizer.Add(sizerDateFrom, 0, wx.ALL | wx.EXPAND, 5)
-        topSizer.Add(sizerDateTo, 0, wx.ALL | wx.EXPAND, 5)
-        topSizer.Add(sizerBtn, 0, wx.CENTER, 5)
-        topSizer.Add(self._reportList, 0, wx.ALL|wx.EXPAND, 5)
- 
-        self.SetSizer(topSizer)
-        topSizer.Fit(self)
+        self._docType =         self.AddLine('Tip Document', uiPanel.uiType.combo)
+        self._dateFrom =        self.AddLine('De la:', uiPanel.uiType.date)
+        self._dateTo =          self.AddLine('Pana la:', uiPanel.uiType.date)
+        reportBtn, printBtn =   self.AddButtons('Genereaza', 'Tipareste')
+        self._reportList =      self.AddLine('', uiPanel.uiType.list)
 
         #events
         self.Bind(wx.EVT_BUTTON, self.OnFillReport, reportBtn)
