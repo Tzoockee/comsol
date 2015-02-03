@@ -13,11 +13,10 @@ def FillListCtrl(listCtrl, rows):
     for index, column in enumerate(rows[0].cursor_description):
         listCtrl.InsertColumn(index+1, column[0])
             
-    for index, row in enumerate(rows):
-        listCtrl.InsertStringItem(index, str(row[0]))
-        for indexCol, column in enumerate(row.cursor_description):
-            if indexCol > 0:
-                listCtrl.SetStringItem(index, indexCol, str(row[indexCol]))
+    for indexRow, row in enumerate(rows):
+        listCtrl.InsertStringItem(indexRow, str(row[0]))
+        for indexCol in range(1, len(row.cursor_description)):
+            listCtrl.SetStringItem(indexRow, indexCol, str(row[indexCol]))
 
 class UsersTab(wx.Panel):
     def __init__(self, parent):
