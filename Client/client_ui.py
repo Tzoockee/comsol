@@ -26,7 +26,7 @@ def FillListCtrl(listCtrl, rows):
             
     for indexRow, row in enumerate(rows):
         listCtrl.InsertStringItem(indexRow, str(row[0]))
-        for indexCol, column in enumerate(row.cursor_description[1:]):
+        for indexCol in range(1, len(row.cursor_description)):
             listCtrl.SetStringItem(indexRow, indexCol, str(row[indexCol]))
 
 def PrintReport(rows):
