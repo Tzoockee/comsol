@@ -7,9 +7,9 @@ class ChangePass(wx.Dialog):
         
         panel = uiPanel.UIPanel(wx.Panel(self, wx.ID_ANY), user = '') 
 
-        self._oldPass =     panel.AddLine('Parola veche', uiPanel.uiType.text, wx.TE_PASSWORD)
-        self._newPass1 =    panel.AddLine('Parola noua', uiPanel.uiType.text, wx.TE_PASSWORD)
-        self._newPass2 =    panel.AddLine('Parola noua', uiPanel.uiType.text, wx.TE_PASSWORD)
+        self._oldPass =     panel.AddLine('Parola veche', uiPanel.uiType.password)
+        self._newPass1 =    panel.AddLine('Parola noua', uiPanel.uiType.password)
+        self._newPass2 =    panel.AddLine('Parola noua', uiPanel.uiType.password)
         btnOK, btnCancel =  panel.AddButtons('OK', 'Cancel')
 
         self.Bind(wx.EVT_BUTTON, self.OnOK, btnOK)

@@ -2,10 +2,12 @@ import wx
 
 class uiType:
     text = 1
-    combo = 2
-    date = 3
-    filePath = 4
-    list = 5
+    password = 2
+    multilineText = 3
+    combo = 4
+    date = 5
+    filePath = 6
+    list = 7
 
 class UIPanel(wx.Panel):
     def __init__(self, parent, user=''):
@@ -17,10 +19,28 @@ class UIPanel(wx.Panel):
         self.SetSizer(self.topSizer)
         self.topSizer.Fit(self)
 
-    def AddLine(self, label, type, style = wx.DEFAULT, size = (-1, -1)):
+    def AddLine(self, label, type, size = (-1, -1)):
         if type == uiType.text:
             l = wx.StaticText(self, wx.ID_ANY, label)
-            editor = wx.TextCtrl(self, wx.ID_ANY, '', style = style, size = size)
+            editor = wx.TextCtrl(self, wx.ID_ANY, '', size = size)
+            sizer = wx.BoxSizer(wx.HORIZONTAL)
+            sizer.Add(l, 0, wx.ALL, 5)
+            sizer.Add(editor, 1, wx.ALL|wx.EXPAND, 5)
+            self.topSizer.Add(sizer, 0, wx.ALL|wx.EXPAND, 5)
+            self.topSizer.Fit(self)
+            return editor
+        if type == uiType.password:
+            l = wx.StaticText(self, wx.ID_ANY, label)
+            editor = wx.TextCtrl(self, wx.ID_ANY, '', style = wx.TE_PASSWORD, size = size)
+            sizer = wx.BoxSizer(wx.HORIZONTAL)
+            sizer.Add(l, 0, wx.ALL, 5)
+            sizer.Add(editor, 1, wx.ALL|wx.EXPAND, 5)
+            self.topSizer.Add(sizer, 0, wx.ALL|wx.EXPAND, 5)
+            self.topSizer.Fit(self)
+            return editor
+        if type == uiType.multilineText:
+            l = wx.StaticText(self, wx.ID_ANY, label)
+            editor = wx.TextCtrl(self, wx.ID_ANY, '', style = wx.TE_MULTILINE, size = size)
             sizer = wx.BoxSizer(wx.HORIZONTAL)
             sizer.Add(l, 0, wx.ALL, 5)
             sizer.Add(editor, 1, wx.ALL|wx.EXPAND, 5)

@@ -89,7 +89,7 @@ class RegisterTab(uiPanel.UIPanel):
         self._lastName =    self.AddLine('Nume', uiPanel.uiType.text)
         self._firstName =   self.AddLine('Prenume', uiPanel.uiType.text)
         self._path =        self.AddLine('Cale Document', uiPanel.uiType.filePath)
-        self._description = self.AddLine('Descriere', uiPanel.uiType.text, wx.TE_MULTILINE, size = (-1, 100))
+        self._description = self.AddLine('Descriere', uiPanel.uiType.multilineText, size = (-1, 100))
         registerBtn, =      self.AddButtons('Inregistrare')
 
         self.Bind(wx.EVT_BUTTON, self.OnRegister, registerBtn)
