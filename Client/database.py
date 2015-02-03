@@ -5,15 +5,15 @@ import wx
 import client_cfg
 import os
 
-def Connection():
+def _Connection():
     conn = pyodbc.connect(client_cfg.DB_Connection, autocommit=True)
     curs = conn.cursor()
     curs.execute('SET DATEFORMAT dmy')
     return conn
 
-def SelectRows(query, *args):
+def _SelectRows(query, *args):
     try:
-        conn = Connection()
+        conn = _Connection()
         curs = conn.cursor()
         curs.execute(query, args)
         rows = curs.fetchall()
@@ -23,9 +23,9 @@ def SelectRows(query, *args):
         return None
     return rows
 
-def ExecuteQuery(query, *args):
+def _ExecuteQuery(query, *args):
     try:
-        conn = Connection()
+        conn = _Connection()
         curs = conn.cursor()
         curs.execute(query, args)
         conn.close()
@@ -33,7 +33,7 @@ def ExecuteQuery(query, *args):
         wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
 
 def TestLogin(username, password):
-    rows = SelectRows('SELECT COUNT(*) AS Status FROM USERS WHERE username = ? and password = ?', username, password)
+    rows = _SelectRows('SELECT COUNT(*) AS Status FROM USERS WHERE username = ? and password = ?', username, password)
     if rows is None or len(rows) == 0:
         return False
 
@@ -41,25 +41,25 @@ def TestLogin(username, password):
 
 def ChangePassword(username, password):
     userId = GetUserId(username)
-    ExecuteQuery('UPDATE Users SET password = ? WHERE ID = ?', password, userId)
+    _ExecuteQuery('UPDATE Users SET password = ? WHERE ID = ?', password, userId)
 
 def GetUserFullName(username):
-    rows = SelectRows('SELECT firstname, lastname FROM USERS WHERE username = ?', username)
+    rows = _SelectRows('SELECT firstname, lastname FROM USERS WHERE username = ?', username)
     if rows is None or len(rows) == 0:
         return ''
     return rows[0].firstname + ' ' + rows[0].lastname
 
 def GetDocumentTypes():
-    return SelectRows('SELECT docType FROM DocType ORDER BY docType ASC')
+    return _SelectRows('SELECT docType FROM DocType ORDER BY docType ASC')
 
 def GetUserId(username):
-    rows = SelectRows('SELECT id FROM Users WHERE username = ?', username)
+    rows = _SelectRows('SELECT id FROM Users WHERE username = ?', username)
     if rows is None or len(rows) == 0:
         return ''
     return rows[0].id
 
 def GetDocTypeId(docType):
-    rows = SelectRows('SELECT id FROM DocType WHERE docType = ?', docType)
+    rows = _SelectRows('SELECT id FROM DocType WHERE docType = ?', docType)
     if rows is None or len(rows) == 0:
         return ''
     return rows[0].id
@@ -68,7 +68,7 @@ def AddDocument(authUser, docType, userDate, lastName, firstName, filePath, desc
     userId = GetUserId(authUser)
     docTypeId = GetDocTypeId(docType)
     try:
-        conn = Connection()
+        conn = _Connection()
         conn.autocommit = False
         curs = conn.cursor()
         curs.execute('INSERT INTO Documents(user_id, doctype_id, user_date, file_path, first_name, last_name, description) VALUES (?, ?, ?, ?, ?, ?, ?)', userId, docTypeId, userDate, filePath, firstName, lastName, description)
@@ -82,7 +82,7 @@ def AddDocument(authUser, docType, userDate, lastName, firstName, filePath, desc
     return str(row.newNumber) + ' - ' + userDate
 
 def GetDocument(number):
-    rows = SelectRows('SELECT file_path FROM Documents WHERE ID = ?', number)
+    rows = _SelectRows('SELECT file_path FROM Documents WHERE ID = ?', number)
     if rows is None or len(rows) == 0:
         return ''
     return rows[0].file_path
@@ -91,7 +91,7 @@ def GetReport(authUser, docType, dateFrom, dateTo):
     userId = GetUserId(authUser)
     docTypeId = GetDocTypeId(docType)
 
-    return SelectRows("""SELECT 
+    return _SelectRows("""SELECT 
                             D.id As Numar,
                             D.user_date As Data,
                             DT.docType As Tip,                            
