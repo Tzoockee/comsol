@@ -13,9 +13,10 @@ class UIPanel(wx.Panel):
     def __init__(self, parent, user=''):
         wx.Panel.__init__(self, parent)
         self.topSizer        = wx.BoxSizer(wx.VERTICAL)
-        self.topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
-        self.topSizer.Add(wx.StaticText(self, wx.ID_ANY, user), 0, wx.ALL|wx.EXPAND, 5)
-        self.topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
+        if user != '':
+            self.topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
+            self.topSizer.Add(wx.StaticText(self, wx.ID_ANY, user), 0, wx.ALL|wx.EXPAND, 5)
+            self.topSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
         self.SetSizer(self.topSizer)
         self.topSizer.Fit(self)
 
