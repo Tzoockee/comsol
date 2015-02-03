@@ -2,10 +2,10 @@ import wx
 import uiPanel
 
 class ChangePass(wx.Dialog):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
         super(ChangePass, self).__init__(*args, **kwargs) 
         
-        panel = uiPanel.UIPanel(wx.Panel(self, wx.ID_ANY), user = '') 
+        panel = uiPanel.UIPanel(wx.Panel(self, wx.ID_ANY), user) 
 
         self._oldPass =     panel.AddLine('Parola veche', uiPanel.uiType.password)
         self._newPass1 =    panel.AddLine('Parola noua', uiPanel.uiType.password)

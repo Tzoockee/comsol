@@ -44,7 +44,7 @@ def PrintReport(rows):
     os.system('rm Report.txt')
 
 def ChangePassword(authenticatedUser):
-    changePwdDlg = changePass.ChangePass(None, -1, 'Schimbare Parola')
+    changePwdDlg = changePass.ChangePass(database.GetUserFullName(authenticatedUser), None, -1, 'Schimbare Parola')
     ret = changePwdDlg.ShowModal()        
     if ret == wx.ID_OK:
         if database.TestLogin(authenticatedUser, changePwdDlg.GetOldPassword()):
