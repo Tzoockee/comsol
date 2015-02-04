@@ -139,17 +139,6 @@ class RegisterTab(uiPanel.UIPanel):
         self._description.SetValue('')
 
 
-class OthersTab(uiPanel.UIPanel):
-    def __init__(self, parent):
-        uiPanel.UIPanel.__init__(self, parent, database.GetUserFullName(authUser))
-
-        changePwdBtn, = self.AddButtons('Schimbare Parola')
-        self.Bind(wx.EVT_BUTTON, self.OnChangePassword, changePwdBtn)
-
-    def OnChangePassword(self, event):
-        ChangePassword(authUser)
-
-
 class ReportTab(uiPanel.UIPanel):
     def __init__(self, parent):
         uiPanel.UIPanel.__init__(self, parent, database.GetUserFullName(authUser))
@@ -188,6 +177,16 @@ class ReportTab(uiPanel.UIPanel):
         filePath = database.GetDocument(event.GetText())
         os.system(filePath)
 
+class OthersTab(uiPanel.UIPanel):
+    def __init__(self, parent):
+        uiPanel.UIPanel.__init__(self, parent, database.GetUserFullName(authUser))
+
+        changePwdBtn, = self.AddButtons('Schimbare Parola')
+        self.Bind(wx.EVT_BUTTON, self.OnChangePassword, changePwdBtn)
+
+    def OnChangePassword(self, event):
+        ChangePassword(authUser)
+
 class Tabs(wx.Notebook):
     def __init__(self, parent):
         wx.Notebook.__init__(self, parent, id=wx.ID_ANY, style=wx.BK_DEFAULT)
@@ -195,11 +194,11 @@ class Tabs(wx.Notebook):
         registerTab = RegisterTab(self)
         self.AddPage(registerTab, "Inregistrare")
         
-        othersTab = OthersTab(self)
-        self.AddPage(othersTab, "Altele")
-
         reportTab = ReportTab(self)
         self.AddPage(reportTab, "Raport")
+
+        othersTab = OthersTab(self)
+        self.AddPage(othersTab, "Altele")
         
 class MainFrame(wx.Frame):
     def __init__(self, *args, **kwargs):
