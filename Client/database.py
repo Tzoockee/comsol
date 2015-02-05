@@ -87,7 +87,7 @@ def GetDocument(number):
         return ''
     return rows[0].file_path
 
-def GetReport(authUser, docType, dateFrom, dateTo):
+def GetReportByDocType(authUser, docType, dateFrom, dateTo):
     userId = GetUserId(authUser)
     docTypeId = GetDocTypeId(docType)
 
@@ -103,3 +103,17 @@ def GetReport(authUser, docType, dateFrom, dateTo):
                         ORDER BY
                             D.id ASC""", docTypeId, userId, dateFrom, dateTo)
 
+def GetReport(authUser, dateFrom, dateTo):
+    userId = GetUserId(authUser)
+
+    return _SelectRows("""SELECT 
+                            D.id As Numar,
+                            D.user_date As Data,
+                            DT.docType As Tip,                            
+                            D.last_name + ' ' + D.first_name As Solicitant
+                        FROM 
+                            Documents D INNER JOIN DocType DT ON D.doctype_id = DT.ID
+                        WHERE
+                            D.user_id = ? AND D.user_date >= ? AND d.user_date <= ?
+                        ORDER BY
+                            D.id ASC""", userId, dateFrom, dateTo)

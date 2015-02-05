@@ -159,18 +159,27 @@ class ReportTab(uiPanel.UIPanel):
 
     def FillDocTypes(self):
         docTypes = database.GetDocumentTypes()
+        self._docType.Append('Toate Tipurile')
         for docType in docTypes:
             self._docType.Append(docType[0])
         self._docType.SetSelection(0)
 
     def OnFillReport(self, event):
-        selectedDocType = self._docType.GetString(self._docType.GetCurrentSelection())
-        rows = database.GetReport(authUser, selectedDocType, GetDateString(self._dateFrom), GetDateString(self._dateTo))
+        docTypeIndex = self._docType.GetCurrentSelection()        
+        if docTypeIndex == 0:
+            rows = database.GetReport(authUser, GetDateString(self._dateFrom), GetDateString(self._dateTo))
+        else:
+            selectedDocType = self._docType.GetString(docTypeIndex)
+            rows = database.GetReportByDocType(authUser, selectedDocType, GetDateString(self._dateFrom), GetDateString(self._dateTo))
         FillListCtrl(self._reportList, rows)
 
     def OnPrintReport(self, event):
-        selectedDocType = self._docType.GetString(self._docType.GetCurrentSelection())
-        rows = database.GetReport(authUser, selectedDocType, GetDateString(self._dateFrom), GetDateString(self._dateTo))
+        docTypeIndex = self._docType.GetCurrentSelection()        
+        if docTypeIndex == 0:
+            rows = database.GetReport(authUser, GetDateString(self._dateFrom), GetDateString(self._dateTo))
+        else:
+            selectedDocType = self._docType.GetString(docTypeIndex)
+            rows = database.GetReportByDocType(authUser, selectedDocType, GetDateString(self._dateFrom), GetDateString(self._dateTo))
         PrintReport(rows)
         
     def OnReportDblClick(self, event):
