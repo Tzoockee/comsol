@@ -196,6 +196,13 @@ class OthersTab(uiPanel.UIPanel):
     def OnChangePassword(self, event):
         ChangePassword(authUser)
 
+class AboutTab(uiPanel.UIPanel):
+    def __init__(self, parent):
+        uiPanel.UIPanel.__init__(self, parent, database.GetUserFullName(authUser))
+
+        self.AddImage('comsol_logo.gif')
+        self.AddLine('Versiune: 1.5', uiPanel.uiType.staticText)
+
 class Tabs(wx.Notebook):
     def __init__(self, parent):
         wx.Notebook.__init__(self, parent, id=wx.ID_ANY, style=wx.BK_DEFAULT)
@@ -208,6 +215,9 @@ class Tabs(wx.Notebook):
 
         othersTab = OthersTab(self)
         self.AddPage(othersTab, "Altele")
+
+        aboutTab = AboutTab(self)
+        self.AddPage(aboutTab, "Despre")
         
 class MainFrame(wx.Frame):
     def __init__(self, *args, **kwargs):

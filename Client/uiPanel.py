@@ -8,6 +8,7 @@ class uiType:
     date = 5
     filePath = 6
     list = 7
+    staticText = 8
 
 class UIPanel(wx.Panel):
     def __init__(self, parent, user=''):
@@ -82,7 +83,13 @@ class UIPanel(wx.Panel):
             list = wx.ListCtrl(self, -1, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
             self.topSizer.Add(list, 0, wx.ALL|wx.EXPAND, 5)
             self.topSizer.Fit(self)
-            return list            
+            return list   
+        if type == uiType.staticText:
+            l = wx.StaticText(self, wx.ID_ANY, label)
+            sizer = wx.BoxSizer(wx.HORIZONTAL)
+            sizer.Add(l, 0, wx.ALL, 5)
+            self.topSizer.Add(sizer, 0, wx.ALL|wx.EXPAND, 5)
+            self.topSizer.Fit(self)
         return None
 
     def AddButtons(self, *buttons):
@@ -100,6 +107,13 @@ class UIPanel(wx.Panel):
         self.topSizer.Add(sizer, 0, wx.ALL|wx.CENTER, 5)
         self.topSizer.Fit(self)
         return buttonList
+
+    def AddImage(self, path):
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        img = wx.StaticBitmap(self, -1, wx.Bitmap(path, wx.BITMAP_TYPE_ANY))
+        sizer.Add(img, 0, wx.ALL, 5)
+        self.topSizer.Add(sizer, 0, wx.ALL|wx.CENTER, 5)
+        self.topSizer.Fit(self)
 
     def OnFileBrowse(self, event, path):
         dialog = wx.FileDialog(self, "Selectati fisierul...", "", "", "Word files (*.doc)|*.doc|PDF files (*.pdf)|*.pdf|All files (*.*)|*.*", wx.FD_OPEN | wx.FD_CHANGE_DIR)
