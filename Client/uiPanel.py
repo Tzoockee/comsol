@@ -74,7 +74,7 @@ class UIPanel(wx.Panel):
             sizer = wx.BoxSizer(wx.HORIZONTAL)
             sizer.Add(l, 0, wx.ALL, 5)
             sizer.Add(path, 1, wx.ALL|wx.EXPAND, 5)
-            sizer.Add(browseBtn, 1, wx.ALL, 5)
+            sizer.Add(browseBtn, 0, wx.ALL, 5)
             self.topSizer.Add(sizer, 0, wx.ALL|wx.EXPAND, 5)
             self.topSizer.Fit(self)
             self.Bind(wx.EVT_BUTTON, lambda event: self.OnFileBrowse(event, path), browseBtn)
