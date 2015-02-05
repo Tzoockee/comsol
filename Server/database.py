@@ -100,7 +100,7 @@ def DeleteDocType(docType):
     try:
         conn = Connection()
         curs = conn.cursor()
-        curs.execute('DELETE FROM DocTypes WHERE docType = ''?''', docType)
+        curs.execute('DELETE FROM docType WHERE docType = ''?''', docType)
         conn.close()
     except pyodbc.Error, err:
         wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
