@@ -235,6 +235,6 @@ app = wx.App()
 authUser = DoLogin()
 		
 #main frame
-frame = MainFrame(None, -1, 'Client')
+frame = MainFrame(None, -1, 'Registratura Electronica by Comsol')
 frame.Show()
 app.MainLoop()
