@@ -8,4 +8,4 @@ setup(
             'includes': 'decimal'
         }
     },
-    console=['client_ui.py'])
+    windows=['client_ui.py'])
