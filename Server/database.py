@@ -2,7 +2,9 @@ __author__ = 'Costin'
 
 import pyodbc
 import wx
-import admin_cfg
+import sys
+sys.path.append("..\\Shared\\")
+from settings import settings
 
 def CreateDatabase(conn, curs):
     curs.execute('CREATE DATABASE NumereDB')
@@ -38,7 +40,7 @@ def CreateDatabase(conn, curs):
                     )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
                     """)
     curs.execute("""CREATE TABLE [dbo].[Documents](
-                    [id] [int] IDENTITY(""" + str(admin_cfg.Start_Seed) + """,1) NOT NULL,
+                    [id] [int] IDENTITY(""" + str(settings['Start_Seed']) + """,1) NOT NULL,
                     [user_id] [int] NOT NULL,
                     [doctype_id] [int] NOT NULL,
                     [user_date] [date] NOT NULL,
@@ -60,7 +62,7 @@ def CreateDatabase(conn, curs):
     curs.execute('ALTER TABLE [dbo].[Documents] CHECK CONSTRAINT [FK_Documents_Users]')
 
 def Connection():
-    conn = pyodbc.connect(admin_cfg.DB_Connection, autocommit=True)
+    conn = pyodbc.connect(settings['DB_Connection'], autocommit=True)
     curs = conn.cursor()
     try:
         curs.execute('USE NumereDB')
