@@ -2,11 +2,13 @@ __author__ = 'Costin'
 
 import pyodbc
 import wx
-import client_cfg
 import os
+import sys
+sys.path.append("..\\Shared\\")
+from settings import settings
 
 def _Connection():
-    conn = pyodbc.connect(client_cfg.DB_Connection, autocommit=True)
+    conn = pyodbc.connect(settings['DB_Connection'], autocommit=True)
     curs = conn.cursor()
     curs.execute('SET DATEFORMAT dmy')
     return conn

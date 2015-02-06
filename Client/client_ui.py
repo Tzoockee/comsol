@@ -2,7 +2,6 @@ import wx
 
 import login
 import changePass
-import client_cfg
 import database
 import time
 import os
@@ -11,6 +10,9 @@ import sys
 import uiPanel
 from prettytable import PrettyTable
 from datetime import datetime
+
+sys.path.append("..\\Shared\\")
+from settings import settings
 
 authUser = ''
 
@@ -120,7 +122,7 @@ class RegisterTab(uiPanel.UIPanel):
         fileNameWithExt = os.path.basename(selectedFile)
         fileName, fileExtension = os.path.splitext(fileNameWithExt)
         newFileName = authUser + '_' + selectedYear + '_' + selectedMonth + '_' + selectedDay + '_' + str(time.time()).replace('.', '_') + fileExtension
-        destFile = os.path.join(os.path.sep, client_cfg.docRepositoryPath, newFileName)
+        destFile = os.path.join(os.path.sep, settings['docRepositoryPath'], newFileName)
         try:
             shutil.copy2(self._path.GetValue(), destFile)
         except (IOError, os.error) as why:
@@ -164,23 +166,20 @@ class ReportTab(uiPanel.UIPanel):
             self._docType.Append(docType[0])
         self._docType.SetSelection(0)
 
-    def OnFillReport(self, event):
+    def GetReportContent(self):
         docTypeIndex = self._docType.GetCurrentSelection()        
         if docTypeIndex == 0:
             rows = database.GetReport(authUser, GetDateString(self._dateFrom), GetDateString(self._dateTo))
         else:
             selectedDocType = self._docType.GetString(docTypeIndex)
             rows = database.GetReportByDocType(authUser, selectedDocType, GetDateString(self._dateFrom), GetDateString(self._dateTo))
-        FillListCtrl(self._reportList, rows)
+        return rows
+
+    def OnFillReport(self, event):
+        FillListCtrl(self._reportList, self.GetReportContent())
 
     def OnPrintReport(self, event):
-        docTypeIndex = self._docType.GetCurrentSelection()        
-        if docTypeIndex == 0:
-            rows = database.GetReport(authUser, GetDateString(self._dateFrom), GetDateString(self._dateTo))
-        else:
-            selectedDocType = self._docType.GetString(docTypeIndex)
-            rows = database.GetReportByDocType(authUser, selectedDocType, GetDateString(self._dateFrom), GetDateString(self._dateTo))
-        PrintReport(rows)
+        PrintReport(self.GetReportContent())
         
     def OnReportDblClick(self, event):
         filePath = database.GetDocument(event.GetText())
