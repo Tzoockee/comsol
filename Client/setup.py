@@ -10,4 +10,6 @@ setup(
             'includes': 'decimal'
         }
     },
-    windows=['client_ui.py'])
+    windows=[{
+            'script':'client_ui.py'
+            }])

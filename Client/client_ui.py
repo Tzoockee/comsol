@@ -204,6 +204,10 @@ class Tabs(wx.Notebook):
 class MainFrame(wx.Frame):
     def __init__(self, *args, **kwargs):
         super(MainFrame, self).__init__(*args, **kwargs) 
+        _icon = wx.EmptyIcon()
+        _icon.CopyFromBitmap(wx.Bitmap('comsol_logo.gif', wx.BITMAP_TYPE_ANY))
+        self.SetIcon(_icon)
+
         panel = wx.Panel(self)
         notebook = Tabs(panel)
         sizer = wx.BoxSizer(wx.VERTICAL)
