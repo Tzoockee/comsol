@@ -11,3 +11,9 @@ def FillListCtrl(listCtrl, rows):
         listCtrl.InsertStringItem(indexRow, str(row[0]))
         for indexCol in range(1, len(row.cursor_description)):
             listCtrl.SetStringItem(indexRow, indexCol, str(row[indexCol]))
+
+def GetDateString(dateCtrl):
+    selectedYear = str(dateCtrl.GetValue().Year)
+    selectedMonth = str(dateCtrl.GetValue().Month+1)
+    selectedDay = str(dateCtrl.GetValue().Day)
+    return selectedDay + '/' + selectedMonth + '/' + selectedYear
