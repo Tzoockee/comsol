@@ -1,12 +1,12 @@
 import glob
 
+#find the configuration file
 config_file = ''
 if config_file == '':
     for file in glob.glob('*.cfg')[:1]:
         config_file = file
 
-connString = 'DB_Connection'
-documentsIdSeed = 'Start_Seed'
+#read the settings
 settings = {}
 
 if len(settings) == 0:
