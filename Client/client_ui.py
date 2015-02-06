@@ -7,12 +7,13 @@ import time
 import os
 import shutil
 import sys
-import uiPanel
 from prettytable import PrettyTable
 from datetime import datetime
 
 sys.path.append("..\\Shared\\")
 from settings import settings
+from uiPanel import UIPanel
+from uiPanel import uiType
 
 authUser = ''
 
@@ -82,16 +83,16 @@ def GetDateString(dateCtrl):
     selectedDay = str(dateCtrl.GetValue().Day)
     return selectedDay + '/' + selectedMonth + '/' + selectedYear
 
-class RegisterTab(uiPanel.UIPanel):
+class RegisterTab(UIPanel):
     def __init__(self, parent):
-        uiPanel.UIPanel.__init__(self, parent, database.GetUserFullName(authUser))
+        UIPanel.__init__(self, parent, database.GetUserFullName(authUser))
 
-        self._docType =     self.AddLine('Tip Document', uiPanel.uiType.combo)
-        self._date =        self.AddLine('Data', uiPanel.uiType.date)
-        self._lastName =    self.AddLine('Nume', uiPanel.uiType.text)
-        self._firstName =   self.AddLine('Prenume', uiPanel.uiType.text)
-        self._path =        self.AddLine('Cale Document', uiPanel.uiType.filePath)
-        self._description = self.AddLine('Descriere', uiPanel.uiType.multilineText, size = (-1, 100))
+        self._docType =     self.AddLine('Tip Document', uiType.combo)
+        self._date =        self.AddLine('Data', uiType.date)
+        self._lastName =    self.AddLine('Nume', uiType.text)
+        self._firstName =   self.AddLine('Prenume', uiType.text)
+        self._path =        self.AddLine('Cale Document', uiType.filePath)
+        self._description = self.AddLine('Descriere', uiType.multilineText, size = (-1, 100))
         registerBtn, =      self.AddButtons('Inregistrare')
 
         self.Bind(wx.EVT_BUTTON, self.OnRegister, registerBtn)
@@ -141,15 +142,15 @@ class RegisterTab(uiPanel.UIPanel):
         self._description.SetValue('')
 
 
-class ReportTab(uiPanel.UIPanel):
+class ReportTab(UIPanel):
     def __init__(self, parent):
-        uiPanel.UIPanel.__init__(self, parent, database.GetUserFullName(authUser))
+        UIPanel.__init__(self, parent, database.GetUserFullName(authUser))
 
-        self._docType =         self.AddLine('Tip Document', uiPanel.uiType.combo)
-        self._dateFrom =        self.AddLine('De la:', uiPanel.uiType.date)
-        self._dateTo =          self.AddLine('Pana la:', uiPanel.uiType.date)
+        self._docType =         self.AddLine('Tip Document', uiType.combo)
+        self._dateFrom =        self.AddLine('De la:', uiType.date)
+        self._dateTo =          self.AddLine('Pana la:', uiType.date)
         reportBtn, printBtn =   self.AddButtons('Genereaza', 'Tipareste')
-        self._reportList =      self.AddLine('', uiPanel.uiType.list)
+        self._reportList =      self.AddLine('', uiType.list)
 
         #events
         self.Bind(wx.EVT_BUTTON, self.OnFillReport, reportBtn)
@@ -185,9 +186,9 @@ class ReportTab(uiPanel.UIPanel):
         filePath = database.GetDocument(event.GetText())
         os.system(filePath)
 
-class OthersTab(uiPanel.UIPanel):
+class OthersTab(UIPanel):
     def __init__(self, parent):
-        uiPanel.UIPanel.__init__(self, parent, database.GetUserFullName(authUser))
+        UIPanel.__init__(self, parent, database.GetUserFullName(authUser))
 
         changePwdBtn, = self.AddButtons('Schimbare Parola')
         self.Bind(wx.EVT_BUTTON, self.OnChangePassword, changePwdBtn)
@@ -195,12 +196,12 @@ class OthersTab(uiPanel.UIPanel):
     def OnChangePassword(self, event):
         ChangePassword(authUser)
 
-class AboutTab(uiPanel.UIPanel):
+class AboutTab(UIPanel):
     def __init__(self, parent):
-        uiPanel.UIPanel.__init__(self, parent, database.GetUserFullName(authUser))
+        UIPanel.__init__(self, parent, database.GetUserFullName(authUser))
 
         self.AddImage('comsol_logo.gif')
-        self.AddLine('Versiune: 1.5', uiPanel.uiType.staticText)
+        self.AddLine('Versiune: 1.5', uiType.staticText)
 
 class Tabs(wx.Notebook):
     def __init__(self, parent):
