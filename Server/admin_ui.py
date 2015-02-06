@@ -4,6 +4,11 @@ import newDocType
 import pyodbc
 import database
 
+import sys
+sys.path.append("..\\Shared\\")
+from uiPanel import UIPanel
+from uiPanel import uiType
+
 def FillListCtrl(listCtrl, rows):
     listCtrl.ClearAll()
 
@@ -18,38 +23,20 @@ def FillListCtrl(listCtrl, rows):
         for indexCol in range(1, len(row.cursor_description)):
             listCtrl.SetStringItem(indexRow, indexCol, str(row[indexCol]))
 
-class UsersTab(wx.Panel):
+class UsersTab(UIPanel):
     def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
+        UIPanel.__init__(self, parent, '')
         
-        #users list control
-        self._userList = wx.ListCtrl(self, -1, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
-        self._userList.InsertColumn(1, 'Utilizator')
-        self._userList.InsertColumn(2, 'Nume')
-        self._userList.InsertColumn(3, 'Prenume')
-  
-        #buttons
-        newBtn = wx.Button(self, wx.ID_ANY, 'Adauga')
-        deleteBtn = wx.Button(self, wx.ID_ANY, 'Sterge')                
-        btnSizer = wx.BoxSizer(wx.HORIZONTAL)
-        btnSizer.Add(newBtn, 0, wx.ALL, 5)
-        btnSizer.Add(deleteBtn, 0, wx.ALL, 5)
-  
-        #layout
-        topSizer = wx.BoxSizer(wx.VERTICAL)
-        topSizer.Add(wx.StaticText(self, wx.ID_ANY, ''), 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(self._userList, 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(btnSizer, 0, wx.ALL|wx.EXPAND, 5)
-        self.SetSizer(topSizer)
-        topSizer.Fit(self)
-        
+        self._userList = self.AddLine('', uiType.list)
+        newBtn, deleteBtn = self.AddButtons('Adauga', 'Sterge')
+
         #events
         self.Bind(wx.EVT_BUTTON, self.OnNewUser, newBtn)
         self.Bind(wx.EVT_BUTTON, self.OnDeleteUser, deleteBtn)
         
         #initialize
         self.RefreshUserList()
-        
+
     def OnNewUser(self, event):
         newUserDlg = newUser.NewUser(None, -1, 'Utilizator nou')
         ret = newUserDlg.ShowModal()        
@@ -68,40 +55,22 @@ class UsersTab(wx.Panel):
         rows = database.GetUsers()
         FillListCtrl(self._userList, rows)
 
-class DocTypeTab(wx.Panel):
+class DocTypeTab(UIPanel):
     def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
+        UIPanel.__init__(self, parent)
 
-        #doctype list control
-        self._docTypeList = wx.ListCtrl(self, -1, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
-        self._docTypeList.InsertColumn(1, 'Tip')
-        self._docTypeList.InsertColumn(2, 'Descriere')
-
-        #buttons
-        newBtn = wx.Button(self, wx.ID_ANY, 'Adauga')
-        deleteBtn = wx.Button(self, wx.ID_ANY, 'Sterge')
-        btnSizer = wx.BoxSizer(wx.HORIZONTAL)
-        btnSizer.Add(newBtn, 0, wx.ALL, 5)
-        btnSizer.Add(deleteBtn, 0, wx.ALL, 5)
-
-        #layout
-        topSizer = wx.BoxSizer(wx.VERTICAL)
-        topSizer.Add(wx.StaticText(self, wx.ID_ANY, ''), 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(self._docTypeList, 0, wx.ALL|wx.EXPAND, 5)
-        topSizer.Add(btnSizer, 0, wx.ALL|wx.EXPAND, 5)
-        self.SetSizer(topSizer)
-        topSizer.Fit(self)
+        self._docTypeList = self.AddLine('', uiType.list)
+        newBtn, deleteBtn = self.AddButtons('Adauga', 'Sterge')
 
         #events
         self.Bind(wx.EVT_BUTTON, self.OnNewDocType, newBtn)
         self.Bind(wx.EVT_BUTTON, self.OnDeleteDocType, deleteBtn)
-
+        
         #initialize
         self.RefreshDocTypeList()
 
     def RefreshDocTypeList(self):
-        rows = database.GetDocTypes()
-        FillListCtrl(self._docTypeList, rows)
+        FillListCtrl(self._docTypeList, database.GetDocTypes())
 
     def OnNewDocType(self, event):
         newDocTypeDlg = newDocType.NewDocType(None, -1, 'Tip Document Nou')
@@ -114,9 +83,8 @@ class DocTypeTab(wx.Panel):
     def OnDeleteDocType(self, event):
         index = self._docTypeList.GetFirstSelected()
         if index != -1 :
-		    database.DeleteDocType(self._docTypeList.GetItem(index, 0).GetText())
-		    self.RefreshDocTypeList()
-		
+            database.DeleteDocType(self._docTypeList.GetItem(index, 0).GetText())
+            self.RefreshDocTypeList()		
 
 class Tabs(wx.Notebook):
     def __init__(self, parent):
