@@ -61,6 +61,18 @@ def CreateDatabase(conn, curs):
                     REFERENCES [dbo].[Users] ([id])""")
     curs.execute('ALTER TABLE [dbo].[Documents] CHECK CONSTRAINT [FK_Documents_Users]')
 
+def ReCreateDatabase():
+    try:
+        conn = Connection()
+        curs = conn.cursor()
+        curs.execute('USE Master')
+        curs.execute('DROP DATABASE NumereDB')
+        CreateDatabase(conn, curs)
+        curs.execute('USE NumereDB')
+        conn.close()
+    except pyodbc.Error, err:
+        wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
+
 def Connection():
     conn = pyodbc.connect(settings['DB_Connection'], autocommit=True)
     curs = conn.cursor()

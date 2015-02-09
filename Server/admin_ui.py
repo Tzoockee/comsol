@@ -23,23 +23,23 @@ class UsersTab(UIPanel):
         self.Bind(wx.EVT_BUTTON, self.OnDeleteUser, deleteBtn)
         
         #initialize
-        self.RefreshUserList()
+        self.Refresh()
 
     def OnNewUser(self, event):
         newUserDlg = newUser.NewUser(None, -1, 'Utilizator nou')
         ret = newUserDlg.ShowModal()        
         if ret == wx.ID_OK:
             database.AddNewUser(newUserDlg.GetUserName(), newUserDlg.GetFirstName(), newUserDlg.GetLastName())
-            self.RefreshUserList()
+            self.Refresh()
         newUserDlg.Destroy()
         
     def OnDeleteUser(self, event):
         index = self._userList.GetFirstSelected()
         if index != -1 :
             database.DeleteUser(self._userList.GetItem(index, 0).GetText())
-            self.RefreshUserList()
+            self.Refresh()
         
-    def RefreshUserList(self):
+    def Refresh(self):
         rows = database.GetUsers()
         FillListCtrl(self._userList, rows)
 
@@ -55,9 +55,9 @@ class DocTypeTab(UIPanel):
         self.Bind(wx.EVT_BUTTON, self.OnDeleteDocType, deleteBtn)
         
         #initialize
-        self.RefreshDocTypeList()
+        self.Refresh()
 
-    def RefreshDocTypeList(self):
+    def Refresh(self):
         FillListCtrl(self._docTypeList, database.GetDocTypes())
 
     def OnNewDocType(self, event):
@@ -65,14 +65,28 @@ class DocTypeTab(UIPanel):
         ret = newDocTypeDlg.ShowModal()        
         if ret == wx.ID_OK:
             database.AddNewDocType(newDocTypeDlg.GetDocumentType(), newDocTypeDlg.GetDocumentDescription())
-            self.RefreshDocTypeList()
+            self.Refresh()
         newDocTypeDlg.Destroy()
 
     def OnDeleteDocType(self, event):
         index = self._docTypeList.GetFirstSelected()
         if index != -1 :
             database.DeleteDocType(self._docTypeList.GetItem(index, 0).GetText())
-            self.RefreshDocTypeList()		
+            self.Refresh()		
+
+class OthersTab(UIPanel):
+    def __init__(self, parent):
+        UIPanel.__init__(self, parent)
+
+        recreateBtn, = self.AddButtons('Re-Initializare')
+        self.Bind(wx.EVT_BUTTON, self.OnReInitialize, recreateBtn)
+
+    def OnReInitialize(self, event):
+        dlg = wx.MessageDialog(self, 'Esti sigur?\n\nToate datele vor fi sterse.', 'Re-Initializare', wx.YES_NO | wx.ICON_QUESTION)
+        if dlg.ShowModal() == wx.ID_YES:
+            database.ReCreateDatabase()
+            self.GetParent().RefreshPages()
+        dlg.Destroy()        
 
 class Tabs(wx.Notebook):
     def __init__(self, parent):
@@ -84,8 +98,12 @@ class Tabs(wx.Notebook):
         docsTab = DocTypeTab(self)
         self.AddPage(docsTab, "Documente")
         
-        othersTab = wx.Panel(self)
+        othersTab = OthersTab(self)
         self.AddPage(othersTab, "Altele")
+
+    def RefreshPages(self):
+        for pageIndex in range(0, self.GetPageCount()):
+            self.GetPage(pageIndex).Refresh()
         
 class MainFrame(wx.Frame):
     def __init__(self, *args, **kwargs):
