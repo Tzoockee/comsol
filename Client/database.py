@@ -95,11 +95,13 @@ def GetReportByDocType(authUser, docType, dateFrom, dateTo):
 
     return _SelectRows("""SELECT 
                             D.id As Numar,
-                            D.user_date As Data,
+                            CONVERT(VARCHAR(10), D.user_date, 20) As Data,
                             DT.docType As Tip,                            
-                            D.last_name + ' ' + D.first_name As Solicitant
+                            D.last_name + ' ' + D.first_name As Solicitant,
+                            U.firstname + ' '  + U.lastname As [Eliberat De]
                         FROM 
                             Documents D INNER JOIN DocType DT ON D.doctype_id = DT.ID
+                            INNER JOIN Users U ON D.user_Id = U.Id
                         WHERE
                             d.docType_id = ? AND D.user_id = ? AND D.user_date >= ? AND d.user_date <= ?
                         ORDER BY
@@ -110,11 +112,13 @@ def GetReport(authUser, dateFrom, dateTo):
 
     return _SelectRows("""SELECT 
                             D.id As Numar,
-                            D.user_date As Data,
+                            CONVERT(VARCHAR(10), D.user_date, 20) As Data,
                             DT.docType As Tip,                            
-                            D.last_name + ' ' + D.first_name As Solicitant
+                            D.last_name + ' ' + D.first_name As Solicitant,
+                            U.firstname + ' '  + U.lastname As [Eliberat De]
                         FROM 
                             Documents D INNER JOIN DocType DT ON D.doctype_id = DT.ID
+                            INNER JOIN Users U ON D.user_Id = U.Id
                         WHERE
                             D.user_id = ? AND D.user_date >= ? AND d.user_date <= ?
                         ORDER BY
