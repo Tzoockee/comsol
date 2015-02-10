@@ -115,7 +115,8 @@ def GetReport(authUser, dateFrom, dateTo):
                             CONVERT(VARCHAR(10), D.user_date, 20) As Data,
                             DT.docType As Tip,                            
                             D.last_name + ' ' + D.first_name As Solicitant,
-                            U.firstname + ' '  + U.lastname As [Eliberat De]
+                            U.firstname + ' '  + U.lastname As [Eliberat De],
+                            D.Description as Descriere
                         FROM 
                             Documents D INNER JOIN DocType DT ON D.doctype_id = DT.ID
                             INNER JOIN Users U ON D.user_Id = U.Id

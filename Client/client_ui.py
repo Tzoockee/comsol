@@ -164,10 +164,10 @@ class ReportTab(UIPanel):
         FillListCtrl(self._reportList, self.GetReportContent())
 
     def OnPreviewReport(self, event):
-        self._html_printer.PreviewText(self.GetReportContent(), 'Raport')
+        self._html_printer.PreviewText(self.GetReportContent(), datetime.today().strftime('%A, %d. %B %Y %I:%M%p'))
 
     def OnPrintReport(self, event):
-        self._html_printer.Print(self.GetReportContent(), 'Raport')
+        self._html_printer.Print(self.GetReportContent(), datetime.today().strftime('%A, %d. %B %Y %I:%M%p'))
         
     def OnReportDblClick(self, event):
         os.system(database.GetDocument(event.GetText()))
