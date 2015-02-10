@@ -1,15 +1,24 @@
+#WX widgets
 import wx
 
+#dialogs
 import login
 import changePass
+
+#database
 import database
+
+#system
 import time
 import os
 import shutil
 import sys
-from prettytable import PrettyTable
 from datetime import datetime
 
+#printing
+from printer import Printer
+
+#shared
 sys.path.append("..\\Shared\\")
 from settings import settings
 from uiPanel import UIPanel
@@ -17,22 +26,8 @@ from uiPanel import uiType
 from utils import FillListCtrl
 from utils import GetDateString
 
+__version__ = 1.5
 authUser = ''
-
-def PrintReport(rows):
-    if len(rows) == 0:
-        return
-    
-    col_names = [cn[0] for cn in rows[0].cursor_description]
-    x = PrettyTable(col_names)
-    for row in rows:
-        x.add_row(row)
-
-    t = open('Report.txt', 'w')
-    t.write(x.get_string())
-    t.close()
-    os.system('notepad.exe /P Report.txt')
-    os.system('rm Report.txt')
 
 def ChangePassword(authenticatedUser):
     changePwdDlg = changePass.ChangePass(database.GetUserFullName(authenticatedUser), None, -1, 'Schimbare Parola')
@@ -128,19 +123,26 @@ class ReportTab(UIPanel):
     def __init__(self, parent):
         UIPanel.__init__(self, parent, database.GetUserFullName(authUser))
 
-        self._docType =         self.AddLine('Tip Document', uiType.combo)
-        self._dateFrom =        self.AddLine('De la:', uiType.date)
-        self._dateTo =          self.AddLine('Pana la:', uiType.date)
-        reportBtn, printBtn =   self.AddButtons('Genereaza', 'Tipareste')
-        self._reportList =      self.AddLine('', uiType.list)
+        #layout
+        self._docType =                     self.AddLine('Tip Document', uiType.combo)
+        self._dateFrom =                    self.AddLine('De la:', uiType.date)
+        self._dateTo =                      self.AddLine('Pana la:', uiType.date)
+        reportBtn, printBtn, previewBtn =   self.AddButtons('Generare', 'Tiparire', 'Pre-vizualizare')
+        self._reportList =                  self.AddLine('', uiType.list)
 
         #events
         self.Bind(wx.EVT_BUTTON, self.OnFillReport, reportBtn)
         self.Bind(wx.EVT_BUTTON, self.OnPrintReport, printBtn)
+        self.Bind(wx.EVT_BUTTON, self.OnPreviewReport, previewBtn)
         self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnReportDblClick, self._reportList)
 
         #initialization
         self.FillDocTypes()
+
+        #printer
+        self._html_printer = Printer(self)
+        self._html_printer.GetPrintData().SetPaperId(wx.PAPER_A4)
+        self._html_printer.GetPrintData().SetOrientation(wx.LANDSCAPE)
 
     def FillDocTypes(self):
         docTypes = database.GetDocumentTypes()
@@ -161,12 +163,14 @@ class ReportTab(UIPanel):
     def OnFillReport(self, event):
         FillListCtrl(self._reportList, self.GetReportContent())
 
+    def OnPreviewReport(self, event):
+        self._html_printer.PreviewText(self.GetReportContent(), 'Raport')
+
     def OnPrintReport(self, event):
-        PrintReport(self.GetReportContent())
+        self._html_printer.Print(self.GetReportContent(), 'Raport')
         
     def OnReportDblClick(self, event):
-        filePath = database.GetDocument(event.GetText())
-        os.system(filePath)
+        os.system(database.GetDocument(event.GetText()))
 
 class OthersTab(UIPanel):
     def __init__(self, parent):
@@ -183,7 +187,7 @@ class AboutTab(UIPanel):
         UIPanel.__init__(self, parent, database.GetUserFullName(authUser))
 
         self.AddImage('comsol_logo.gif')
-        self.AddLine('Versiune: 1.5', uiType.staticText)
+        self.AddLine('Versiune: ' + str(__version__), uiType.staticText)
 
 class Tabs(wx.Notebook):
     def __init__(self, parent):
