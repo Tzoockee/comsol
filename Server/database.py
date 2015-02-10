@@ -43,7 +43,7 @@ def CreateDatabase(conn, curs):
                     [id] [int] IDENTITY(""" + str(settings['Start_Seed']) + """,1) NOT NULL,
                     [user_id] [int] NOT NULL,
                     [doctype_id] [int] NOT NULL,
-                    [user_date] [date] NOT NULL,
+                    [user_date] [datetime] NOT NULL,
                     [system_date] [datetime] NOT NULL CONSTRAINT [DF_Documents_system_date]  DEFAULT (getdate()),
                     [file_path] [varchar](512) NOT NULL,
                     [first_name] [varchar](128) NOT NULL,
