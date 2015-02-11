@@ -1,9 +1,15 @@
-__author__ = 'Costin'
-
-import pyodbc
+#WX widgets
 import wx
+
+#PyODBC
+import pyodbc
+
+#system
 import os
 import sys
+import shutil
+
+#Shared
 sys.path.append("..\\Shared\\")
 from settings import settings
 
@@ -66,20 +72,30 @@ def GetDocTypeId(docType):
         return ''
     return rows[0].id
 
-def AddDocument(authUser, docType, userDate, lastName, firstName, filePath, description):
+def AddDocument(authUser, docType, userDate, lastName, firstName, description, srcFile, dstFile):
     userId = GetUserId(authUser)
     docTypeId = GetDocTypeId(docType)
     try:
         conn = _Connection()
-        conn.autocommit = False
+        conn.autocommit = False         #Begin Transaction
         curs = conn.cursor()
-        curs.execute('INSERT INTO Documents(user_id, doctype_id, user_date, file_path, first_name, last_name, description) VALUES (?, ?, ?, ?, ?, ?, ?)', userId, docTypeId, userDate, filePath, firstName, lastName, description)
+        curs.execute('INSERT INTO Documents(user_id, doctype_id, user_date, file_path, first_name, last_name, description) VALUES (?, ?, ?, ?, ?, ?, ?)', userId, docTypeId, userDate, '', firstName, lastName, description)
         curs.execute('SELECT @@IDENTITY As newNumber')
         row = curs.fetchone()
-        curs.commit()
+        dstFile = os.path.join(os.path.sep, settings['docRepositoryPath'], str(row.newNumber) + '_' + dstFile)
+        try:
+            shutil.copy2(srcFile, dstFile)
+        except (IOError, os.error) as why:
+            wx.MessageBox(str(why), 'Error', wx.OK | wx.ICON_ERROR)
+            conn.close()
+            return ''
+        curs.execute('UPDATE Documents Set file_path = ? WHERE Id = ?', dstFile, row.newNumber)
+        curs.commit()                   #Commit Transaction
         conn.close()
     except pyodbc.Error, err:
         wx.MessageBox(str(err), 'Error', wx.OK | wx.ICON_ERROR)
+        if dstFile != '':
+            os.remove(dstFile)
         return ''
     return str(row.newNumber) + ' - ' + userDate
 

@@ -11,7 +11,6 @@ import database
 #system
 import time
 import os
-import shutil
 import sys
 from datetime import datetime
 
@@ -20,7 +19,6 @@ from printer import Printer
 
 #shared
 sys.path.append("..\\Shared\\")
-from settings import settings
 from uiPanel import UIPanel
 from uiPanel import uiType
 from utils import FillListCtrl
@@ -42,18 +40,17 @@ def ChangePassword(authenticatedUser):
 
 def DoLogin():
     loginDlg = login.Login(None, -1, 'Autentificare')
-    ret = loginDlg.ShowModal()
     authenticatedUser = ''
-    if ret == wx.ID_OK:
+    if loginDlg.ShowModal() == wx.ID_OK:
         if database.TestLogin(loginDlg.GetUserName(), loginDlg.GetPassword()):
             authenticatedUser = loginDlg.GetUserName()
         else:
             wx.MessageBox('Autentificare esuata', 'Error', wx.OK | wx.ICON_ERROR)
-            loginDlg.Destroy()
-            sys.exit()
-    else:
+
+    if authenticatedUser == '':
         loginDlg.Destroy()
         sys.exit()
+
     password = loginDlg.GetPassword()
     loginDlg.Destroy()
     if password == authenticatedUser:
@@ -96,18 +93,11 @@ class RegisterTab(UIPanel):
             wx.MessageBox('Nu toate campurile sunt completate', 'Error', wx.OK | wx.ICON_ERROR)
             return
 
-        dirName = os.path.dirname(selectedFile)
-        fileNameWithExt = os.path.basename(selectedFile)
-        fileName, fileExtension = os.path.splitext(fileNameWithExt)
-        newFileName = authUser + '_' + selectedYear + '_' + selectedMonth + '_' + selectedDay + '_' + str(time.time()).replace('.', '_') + fileExtension
-        destFile = os.path.join(os.path.sep, settings['docRepositoryPath'], newFileName)
-        try:
-            shutil.copy2(self._path.GetValue(), destFile)
-        except (IOError, os.error) as why:
-            wx.MessageBox(str(why), 'Error', wx.OK | wx.ICON_ERROR)
-            return
+        fileName, fileExtension = os.path.splitext(os.path.basename(selectedFile))
+        dstFile = authUser + '_' + selectedYear + '_' + selectedMonth + '_' + selectedDay + '_' + str(time.time()).replace('.', '_') + fileExtension
+        srcFile = self._path.GetValue()
 
-        newNumber = database.AddDocument(authUser, selectedDocType, GetDateString(self._date), selectedLastName, selectedFirstName, destFile, selectedDescription)
+        newNumber = database.AddDocument(authUser, selectedDocType, GetDateString(self._date), selectedLastName, selectedFirstName, selectedDescription, srcFile, dstFile)
         if newNumber == '':
             return
         
