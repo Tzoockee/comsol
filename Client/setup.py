@@ -72,4 +72,5 @@ setup(
     windows=[{
             'script':'client_ui.py',
             'other_resources' : [(RT_MANIFEST, 1, MANIFEST_TEMPLATE % dict(prog="client"))],
+            'icon_resources': [(0x0004, 'comsol_logo.ico')]
             }])
